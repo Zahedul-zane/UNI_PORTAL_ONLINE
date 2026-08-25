@@ -1,0 +1,1535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Color="#333333"/>
+  </Style>
+  <Style ss:ID="HeaderStyle">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+   </Borders>
+   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#1E3A8A" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="RowEven">
+   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="RowOdd">
+   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Admin">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Admin_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Username</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Password</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Full_Name</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">E_mail</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Created_At</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">admin</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$8.u0j.P4cOa9rJgK/W1M/uN4oP8qR7sT6uV5wX4yZ3aB2c1d0e9f</Data></Cell>
+    <Cell><Data ss:Type="String">System Administrator</Data></Cell>
+    <Cell><Data ss:Type="String">admin@ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">2026-08-25 06:10:31</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Department">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Dept_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Dept_Name</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Head_Faculty_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">101</Data></Cell>
+    <Cell><Data ss:Type="String">Computer Science &amp; Engineering</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">102</Data></Cell>
+    <Cell><Data ss:Type="String">Electrical &amp; Electronic Engineering</Data></Cell>
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">103</Data></Cell>
+    <Cell><Data ss:Type="String">Business Administration</Data></Cell>
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">104</Data></Cell>
+    <Cell><Data ss:Type="String">Pharmacy</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Faculty">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Faculty_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">First_name</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Last_name</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Designation</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Room_No</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">E_mail</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Password</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Dept_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">Dr. Ahmed</Data></Cell>
+    <Cell><Data ss:Type="String">Hasan</Data></Cell>
+    <Cell><Data ss:Type="String">Professor &amp; Chairperson</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-602</Data></Cell>
+    <Cell><Data ss:Type="String">ahmed.hasan@ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$e84WvT6bX.8K7aJpZl1G7.R03wX/VqWj.6T8m9E1P3Q5R7S9T0U1V</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">Dr. Farhana</Data></Cell>
+    <Cell><Data ss:Type="String">Sultana</Data></Cell>
+    <Cell><Data ss:Type="String">Associate Professor</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-405</Data></Cell>
+    <Cell><Data ss:Type="String">farhana.sultana@ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$e84WvT6bX.8K7aJpZl1G7.R03wX/VqWj.6T8m9E1P3Q5R7S9T0U1V</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+    <Cell><Data ss:Type="String">Md. Rashidul</Data></Cell>
+    <Cell><Data ss:Type="String">Islam</Data></Cell>
+    <Cell><Data ss:Type="String">Assistant Professor</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-508</Data></Cell>
+    <Cell><Data ss:Type="String">rashidul.islam@ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$e84WvT6bX.8K7aJpZl1G7.R03wX/VqWj.6T8m9E1P3Q5R7S9T0U1V</Data></Cell>
+    <Cell><Data ss:Type="String">102</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+    <Cell><Data ss:Type="String">Prof. Shahana</Data></Cell>
+    <Cell><Data ss:Type="String">Begum</Data></Cell>
+    <Cell><Data ss:Type="String">Professor</Data></Cell>
+    <Cell><Data ss:Type="String">AB3-301</Data></Cell>
+    <Cell><Data ss:Type="String">shahana.begum@ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$e84WvT6bX.8K7aJpZl1G7.R03wX/VqWj.6T8m9E1P3Q5R7S9T0U1V</Data></Cell>
+    <Cell><Data ss:Type="String">103</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Faculty_phonenum">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Faculty_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Phone_Number1</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Phone_Number2</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">+8801711122334</Data></Cell>
+    <Cell><Data ss:Type="String">+8801811122334</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">+8801722233445</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+    <Cell><Data ss:Type="String">+8801733344556</Data></Cell>
+    <Cell><Data ss:Type="String">+8801933344556</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+    <Cell><Data ss:Type="String">+8801744455667</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Student">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Student_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">First_name</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Last_name</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">E_mail</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Password</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Address</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">DOB</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Faculty_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Dept_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Tanvir</Data></Cell>
+    <Cell><Data ss:Type="String">Ahmed</Data></Cell>
+    <Cell><Data ss:Type="String">tanvir.621@std.ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9</Data></Cell>
+    <Cell><Data ss:Type="String">House 45, Road 12, Block C, Aftabnagar, Dhaka</Data></Cell>
+    <Cell><Data ss:Type="String">2002-05-14</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">Anika</Data></Cell>
+    <Cell><Data ss:Type="String">Rahman</Data></Cell>
+    <Cell><Data ss:Type="String">anika.622@std.ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9</Data></Cell>
+    <Cell><Data ss:Type="String">Sector 7, Uttara, Dhaka</Data></Cell>
+    <Cell><Data ss:Type="String">2003-08-22</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">2023-3-60-623</Data></Cell>
+    <Cell><Data ss:Type="String">Sabbir</Data></Cell>
+    <Cell><Data ss:Type="String">Hossain</Data></Cell>
+    <Cell><Data ss:Type="String">sabbir.623@std.ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9</Data></Cell>
+    <Cell><Data ss:Type="String">Badda, Rampura, Dhaka</Data></Cell>
+    <Cell><Data ss:Type="String">2001-11-03</Data></Cell>
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+    <Cell><Data ss:Type="String">102</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2023-3-60-624</Data></Cell>
+    <Cell><Data ss:Type="String">Mahir</Data></Cell>
+    <Cell><Data ss:Type="String">Faisal</Data></Cell>
+    <Cell><Data ss:Type="String">mahir.624@std.ewubd.edu</Data></Cell>
+    <Cell><Data ss:Type="String">$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9</Data></Cell>
+    <Cell><Data ss:Type="String">Dhanmondi 32, Dhaka</Data></Cell>
+    <Cell><Data ss:Type="String">2002-01-19</Data></Cell>
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+    <Cell><Data ss:Type="String">103</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Student_phonenum">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Student_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Phone_Number1</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Phone_Number2</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">+8801812345678</Data></Cell>
+    <Cell><Data ss:Type="String">+8801512345678</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">+8801912345679</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">2023-3-60-623</Data></Cell>
+    <Cell><Data ss:Type="String">+8801612345680</Data></Cell>
+    <Cell><Data ss:Type="String">+8801712345680</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2023-3-60-624</Data></Cell>
+    <Cell><Data ss:Type="String">+8801312345681</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Course">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Course_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Course_Title</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Credits</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Dept_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="String">Discrete Mathematics</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE102</Data></Cell>
+    <Cell><Data ss:Type="String">Structured Programming Language</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+    <Cell><Data ss:Type="String">Structured Programming Language</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="String">Discrete Mathematics &amp; Logic</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE105</Data></Cell>
+    <Cell><Data ss:Type="String">Data Structures</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE107</Data></Cell>
+    <Cell><Data ss:Type="String">Object Oriented Programming</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE109</Data></Cell>
+    <Cell><Data ss:Type="String">Object Oriented Programming Lab</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE110</Data></Cell>
+    <Cell><Data ss:Type="String">Algorithms</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE205</Data></Cell>
+    <Cell><Data ss:Type="String">Algorithms &amp; Complexities</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="String">Data Structures and Algorithms</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE209</Data></Cell>
+    <Cell><Data ss:Type="String">Digital Logic Design</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE246</Data></Cell>
+    <Cell><Data ss:Type="String">Algorithms Analysis &amp; Design</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE251</Data></Cell>
+    <Cell><Data ss:Type="String">Electronic Devices and Circuits</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE299</Data></Cell>
+    <Cell><Data ss:Type="String">Junior Design Project</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE301</Data></Cell>
+    <Cell><Data ss:Type="String">Database Management Systems</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="String">Database Systems</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE303</Data></Cell>
+    <Cell><Data ss:Type="String">Database Systems Lab</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE325</Data></Cell>
+    <Cell><Data ss:Type="String">Operating Systems</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE327</Data></Cell>
+    <Cell><Data ss:Type="String">Software Engineering</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE331</Data></Cell>
+    <Cell><Data ss:Type="String">Microprocessor and Microcontrollers</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE338</Data></Cell>
+    <Cell><Data ss:Type="String">Computer Networks</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE347</Data></Cell>
+    <Cell><Data ss:Type="String">Information System Analysis and Design</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE350</Data></Cell>
+    <Cell><Data ss:Type="String">Computer Architecture</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE360</Data></Cell>
+    <Cell><Data ss:Type="String">Artificial Intelligence</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE366</Data></Cell>
+    <Cell><Data ss:Type="String">Machine Learning</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE381</Data></Cell>
+    <Cell><Data ss:Type="String">Web Programming</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="String">Software Engineering &amp; Design</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE441</Data></Cell>
+    <Cell><Data ss:Type="String">Computer Graphics</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE442</Data></Cell>
+    <Cell><Data ss:Type="String">Digital Image Processing</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE447</Data></Cell>
+    <Cell><Data ss:Type="String">Compiler Design</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE479</Data></Cell>
+    <Cell><Data ss:Type="String">Cloud Computing</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE480</Data></Cell>
+    <Cell><Data ss:Type="String">Mobile Application Development</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE496</Data></Cell>
+    <Cell><Data ss:Type="String">Computer Security &amp; Cryptography</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE499A</Data></Cell>
+    <Cell><Data ss:Type="String">Senior Design Project / Thesis I</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE499B</Data></Cell>
+    <Cell><Data ss:Type="String">Senior Design Project / Thesis II</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">MAT101</Data></Cell>
+    <Cell><Data ss:Type="String">Differential and Integral Calculus</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">PHY109</Data></Cell>
+    <Cell><Data ss:Type="String">Engineering Physics &amp; Electromagnetics</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">ENG101</Data></Cell>
+    <Cell><Data ss:Type="String">Basic Functional English</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">EEE101</Data></Cell>
+    <Cell><Data ss:Type="String">Electrical Circuits I</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">102</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">BBA101</Data></Cell>
+    <Cell><Data ss:Type="String">Principles of Management</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">103</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Course_prerequisite">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Course_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Pre_Course_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE303</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="String">CSE102</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">CSE246</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">CSE325</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Section">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Section_Id</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Section_No</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Time_Slot</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Room_No</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Capacity</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Course_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Faculty_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Sun-Tue 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-502</Data></Cell>
+    <Cell><Data ss:Type="Number">35</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">Mon-Wed 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-503</Data></Cell>
+    <Cell><Data ss:Type="Number">35</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Sun-Tue 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-Lab3</Data></Cell>
+    <Cell><Data ss:Type="Number">30</Data></Cell>
+    <Cell><Data ss:Type="String">CSE303</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Mon-Wed 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-401</Data></Cell>
+    <Cell><Data ss:Type="Number">40</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Sun-Tue 11:50 AM - 01:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-302</Data></Cell>
+    <Cell><Data ss:Type="Number">35</Data></Cell>
+    <Cell><Data ss:Type="String">EEE101</Data></Cell>
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">6</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Mon-Wed 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB3-201</Data></Cell>
+    <Cell><Data ss:Type="Number">45</Data></Cell>
+    <Cell><Data ss:Type="String">BBA101</Data></Cell>
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">7</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Sun-Tue 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-601</Data></Cell>
+    <Cell><Data ss:Type="Number">35</Data></Cell>
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">8</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Mon-Wed 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-Lab1</Data></Cell>
+    <Cell><Data ss:Type="Number">30</Data></Cell>
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Sun-Tue 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-201</Data></Cell>
+    <Cell><Data ss:Type="Number">40</Data></Cell>
+    <Cell><Data ss:Type="String">MAT101</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Enrollment">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Enrollment_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Enrollment_Type</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Advising_Status</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Mid_Mark</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Final_Mark</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Grade</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Section_Id</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">ManagedBy_Faculty_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Student_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Semester</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Year</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">28.5</Data></Cell>
+    <Cell><Data ss:Type="Number">56</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">25</Data></Cell>
+    <Cell><Data ss:Type="Number">49.5</Data></Cell>
+    <Cell><Data ss:Type="String">A-</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">3</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">29</Data></Cell>
+    <Cell><Data ss:Type="Number">58</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">4</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Pending</Data></Cell>
+    <Cell><Data ss:Type="Number">22</Data></Cell>
+    <Cell><Data ss:Type="Number">41</Data></Cell>
+    <Cell><Data ss:Type="String">B</Data></Cell>
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-623</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">5</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">27</Data></Cell>
+    <Cell><Data ss:Type="Number">53</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">6</Data></Cell>
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-624</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">101</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">29.5</Data></Cell>
+    <Cell><Data ss:Type="Number">58</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">102</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">27</Data></Cell>
+    <Cell><Data ss:Type="Number">53.5</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">8</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">103</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">25.5</Data></Cell>
+    <Cell><Data ss:Type="Number">50</Data></Cell>
+    <Cell><Data ss:Type="String">A</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">104</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">28</Data></Cell>
+    <Cell><Data ss:Type="Number">56.5</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">6</Data></Cell>
+    <Cell><Data ss:Type="String">1652688918</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">105</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">30</Data></Cell>
+    <Cell><Data ss:Type="Number">59</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Fall</Data></Cell>
+    <Cell><Data ss:Type="Number">2025</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">106</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">26.5</Data></Cell>
+    <Cell><Data ss:Type="Number">52</Data></Cell>
+    <Cell><Data ss:Type="String">A</Data></Cell>
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Fall</Data></Cell>
+    <Cell><Data ss:Type="Number">2025</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">107</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">28.5</Data></Cell>
+    <Cell><Data ss:Type="Number">55</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">7</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+    <Cell><Data ss:Type="String">Fall</Data></Cell>
+    <Cell><Data ss:Type="Number">2025</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">108</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">28</Data></Cell>
+    <Cell><Data ss:Type="Number">55</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">109</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">26</Data></Cell>
+    <Cell><Data ss:Type="Number">50</Data></Cell>
+    <Cell><Data ss:Type="String">A</Data></Cell>
+    <Cell><Data ss:Type="Number">8</Data></Cell>
+    <Cell><Data ss:Type="String">1652688916</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">110</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">29</Data></Cell>
+    <Cell><Data ss:Type="Number">57</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">1652688915</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">Fall</Data></Cell>
+    <Cell><Data ss:Type="Number">2025</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">111</Data></Cell>
+    <Cell><Data ss:Type="String">Regular</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+    <Cell><Data ss:Type="Number">27.5</Data></Cell>
+    <Cell><Data ss:Type="Number">53</Data></Cell>
+    <Cell><Data ss:Type="String">A+</Data></Cell>
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">1652688917</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+    <Cell><Data ss:Type="String">Fall</Data></Cell>
+    <Cell><Data ss:Type="Number">2025</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Pre_advising">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Pre_Advising_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Submission_TimeStamp</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Semester</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Year</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Student_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">2026-08-23 06:10:31</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2</Data></Cell>
+    <Cell><Data ss:Type="String">2026-08-20 06:10:31</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">3</Data></Cell>
+    <Cell><Data ss:Type="String">2026-08-23 06:10:31</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-623</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Includedcourse">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Pre_Advising_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Course_ID</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Status</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE102</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE325</Data></Cell>
+    <Cell><Data ss:Type="String">Pending</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">2</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="String">Approved</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="String">2</Data></Cell>
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="String">Pending</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="String">3</Data></Cell>
+    <Cell><Data ss:Type="String">EEE101</Data></Cell>
+    <Cell><Data ss:Type="String">Pending</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Payment">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Payment_Id</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Transaction_Id</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Payment_Status</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Amount</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Semester</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Year</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Payment_Date</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Student_ID</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">TXN-2026-EWU-9821</Data></Cell>
+    <Cell><Data ss:Type="String">Paid</Data></Cell>
+    <Cell><Data ss:Type="Number">34500</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String">2026-01-15</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">TXN-2026-EWU-9822</Data></Cell>
+    <Cell><Data ss:Type="String">Paid</Data></Cell>
+    <Cell><Data ss:Type="Number">34500</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String">2026-01-16</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-622</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">TXN-2026-EWU-9823</Data></Cell>
+    <Cell><Data ss:Type="String">Pending</Data></Cell>
+    <Cell><Data ss:Type="Number">18500</Data></Cell>
+    <Cell><Data ss:Type="String">Summer</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-621</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">TXN-2026-EWU-9824</Data></Cell>
+    <Cell><Data ss:Type="String">Paid</Data></Cell>
+    <Cell><Data ss:Type="Number">31000</Data></Cell>
+    <Cell><Data ss:Type="String">Spring</Data></Cell>
+    <Cell><Data ss:Type="Number">2026</Data></Cell>
+    <Cell><Data ss:Type="String">2026-01-20</Data></Cell>
+    <Cell><Data ss:Type="String">2023-3-60-623</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="Faculty_courses">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Column ss:AutoFitWidth="1" ss:Width="120"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">id</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">course</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">section</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">faculty</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">capacity</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">timing</Data></Cell>
+    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">room_no</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">MAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">W 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">429</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">MAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">M 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">530 (C. Lab-2)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">AT</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">212</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">AT</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">372 (SEIP Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">AT</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">372 (SEIP Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">6</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">AT</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">223</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">7</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">MSHQ</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-201</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">8</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">MSHQ</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">R 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">372 (SEIP Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">DMZM</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">531</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">10</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">DMZM</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">241</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">11</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">6</Data></Cell>
+    <Cell><Data ss:Type="String">DMZM</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 04:50 PM - 06:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">533 (C. Lab-3)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">12</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">6</Data></Cell>
+    <Cell><Data ss:Type="String">DMZM</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 04:50 PM - 06:20 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">372</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">13</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">7</Data></Cell>
+    <Cell><Data ss:Type="String">AQUIB</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">217</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">14</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">7</Data></Cell>
+    <Cell><Data ss:Type="String">AQUIB</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="String">372 (SEIP Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">15</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">8</Data></Cell>
+    <Cell><Data ss:Type="String">AQUIB</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 04:50 PM - 06:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">372 (SEIP Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">16</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">8</Data></Cell>
+    <Cell><Data ss:Type="String">AQUIB</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 04:50 PM - 06:20 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">221</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">17</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">TZE</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-301</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">18</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">9</Data></Cell>
+    <Cell><Data ss:Type="String">TZE</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="String">435 (Virtual Reality and Augmented Reality Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">19</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">10</Data></Cell>
+    <Cell><Data ss:Type="String">TZE</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 04:50 PM - 06:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">534 (C. Lab-4)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">20</Data></Cell>
+    <Cell><Data ss:Type="String">CSE101</Data></Cell>
+    <Cell><Data ss:Type="Number">10</Data></Cell>
+    <Cell><Data ss:Type="String">TZE</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 04:50 PM - 06:20 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">435</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">21</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">FHT</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">S 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">321</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">22</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">FHT</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">T 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">530 (C. Lab-2)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">23</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">SRH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">M 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">325</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">24</Data></Cell>
+    <Cell><Data ss:Type="String">CSE103</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">SRH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">W 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">372 (SEIP Lab)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">25</Data></Cell>
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">FAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">M 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-Lab1</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">26</Data></Cell>
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">FAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">W 03:10 PM - 04:40 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">429</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">27</Data></Cell>
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">MSHQ</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-Lab1</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">28</Data></Cell>
+    <Cell><Data ss:Type="String">CSE104</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">MSHQ</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="Number">321</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">29</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">DMZM</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">S 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">431</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">30</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">DMZM</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">T 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">534 (C. Lab-4)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">31</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">TZE</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">M 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="Number">217</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">32</Data></Cell>
+    <Cell><Data ss:Type="String">CSE207</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">TZE</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">W 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">533 (C. Lab-3)</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">33</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">S 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-502</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">34</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">T 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-502</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">35</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">FAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">M 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-503</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">36</Data></Cell>
+    <Cell><Data ss:Type="String">CSE302</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">FAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">W 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-503</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">37</Data></Cell>
+    <Cell><Data ss:Type="String">CSE303</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AH</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">S 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-Lab3</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">38</Data></Cell>
+    <Cell><Data ss:Type="String">CSE303</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AH</Data></Cell>
+    <Cell><Data ss:Type="String">0/30</Data></Cell>
+    <Cell><Data ss:Type="String">T 10:10 AM - 11:40 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-Lab3</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">39</Data></Cell>
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">S 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-601</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">40</Data></Cell>
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">AH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">T 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-601</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">41</Data></Cell>
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">FHT</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">M 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-602</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">42</Data></Cell>
+    <Cell><Data ss:Type="String">CSE401</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">FHT</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">W 01:30 PM - 03:00 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB1-602</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">43</Data></Cell>
+    <Cell><Data ss:Type="String">MAT101</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">FAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/40</Data></Cell>
+    <Cell><Data ss:Type="String">S 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-201</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">44</Data></Cell>
+    <Cell><Data ss:Type="String">MAT101</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">FAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/40</Data></Cell>
+    <Cell><Data ss:Type="String">T 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-201</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">45</Data></Cell>
+    <Cell><Data ss:Type="String">MAT101</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">MAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/40</Data></Cell>
+    <Cell><Data ss:Type="String">M 11:50 AM - 01:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-202</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">46</Data></Cell>
+    <Cell><Data ss:Type="String">MAT101</Data></Cell>
+    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">MAR</Data></Cell>
+    <Cell><Data ss:Type="String">0/40</Data></Cell>
+    <Cell><Data ss:Type="String">W 11:50 AM - 01:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-202</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">47</Data></Cell>
+    <Cell><Data ss:Type="String">PHY109</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">SRH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">S 11:50 AM - 01:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-301</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">48</Data></Cell>
+    <Cell><Data ss:Type="String">PHY109</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">SRH</Data></Cell>
+    <Cell><Data ss:Type="String">0/35</Data></Cell>
+    <Cell><Data ss:Type="String">T 11:50 AM - 01:20 PM</Data></Cell>
+    <Cell><Data ss:Type="String">AB2-Lab1</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowEven">
+    <Cell><Data ss:Type="Number">49</Data></Cell>
+    <Cell><Data ss:Type="String">ENG101</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">MSHQ</Data></Cell>
+    <Cell><Data ss:Type="String">0/40</Data></Cell>
+    <Cell><Data ss:Type="String">M 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB3-101</Data></Cell>
+   </Row>
+   <Row ss:StyleID="RowOdd">
+    <Cell><Data ss:Type="Number">50</Data></Cell>
+    <Cell><Data ss:Type="String">ENG101</Data></Cell>
+    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">MSHQ</Data></Cell>
+    <Cell><Data ss:Type="String">0/40</Data></Cell>
+    <Cell><Data ss:Type="String">W 08:30 AM - 10:00 AM</Data></Cell>
+    <Cell><Data ss:Type="String">AB3-101</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+</Workbook>

@@ -1,0 +1,17 @@
+Enrollment_ID,Enrollment_Type,Advising_Status,Mid_Mark,Final_Mark,Grade,Section_Id,ManagedBy_Faculty_ID,Student_ID,Semester,Year
+1,Regular,Approved,28.5,56,A+,1,1652688915,2023-3-60-621,Summer,2026
+2,Regular,Approved,25,49.5,A-,3,1652688915,2023-3-60-621,Summer,2026
+3,Regular,Approved,29,58,A+,2,1652688916,2023-3-60-622,Summer,2026
+4,Regular,Pending,22,41,B,5,1652688917,2023-3-60-623,Summer,2026
+5,Regular,Approved,27,53,A+,6,1652688918,2023-3-60-624,Summer,2026
+101,Regular,Approved,29.5,58,A+,1,1652688915,2023-3-60-621,Spring,2026
+102,Regular,Approved,27,53.5,A+,8,1652688916,2023-3-60-621,Spring,2026
+103,Regular,Approved,25.5,50,A,9,1652688916,2023-3-60-621,Spring,2026
+104,Regular,Approved,28,56.5,A+,6,1652688918,2023-3-60-621,Spring,2026
+105,Regular,Approved,30,59,A+,4,1652688915,2023-3-60-621,Fall,2025
+106,Regular,Approved,26.5,52,A,5,1652688917,2023-3-60-621,Fall,2025
+107,Regular,Approved,28.5,55,A+,7,1652688915,2023-3-60-621,Fall,2025
+108,Regular,Approved,28,55,A+,1,1652688915,2023-3-60-622,Spring,2026
+109,Regular,Approved,26,50,A,8,1652688916,2023-3-60-622,Spring,2026
+110,Regular,Approved,29,57,A+,4,1652688915,2023-3-60-622,Fall,2025
+111,Regular,Approved,27.5,53,A+,5,1652688917,2023-3-60-622,Fall,2025

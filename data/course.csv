@@ -1,0 +1,41 @@
+Course_ID,Course_Title,Credits,Dept_ID
+CSE101,"Discrete Mathematics",3,101
+CSE102,"Structured Programming Language",3,101
+CSE103,"Structured Programming Language",4,101
+CSE104,"Discrete Mathematics & Logic",3,101
+CSE105,"Data Structures",3,101
+CSE107,"Object Oriented Programming",3,101
+CSE109,"Object Oriented Programming Lab",1,101
+CSE110,Algorithms,3,101
+CSE205,"Algorithms & Complexities",3,101
+CSE207,"Data Structures and Algorithms",4,101
+CSE209,"Digital Logic Design",3,101
+CSE246,"Algorithms Analysis & Design",3,101
+CSE251,"Electronic Devices and Circuits",3,101
+CSE299,"Junior Design Project",3,101
+CSE301,"Database Management Systems",3,101
+CSE302,"Database Systems",3,101
+CSE303,"Database Systems Lab",1,101
+CSE325,"Operating Systems",3,101
+CSE327,"Software Engineering",3,101
+CSE331,"Microprocessor and Microcontrollers",3,101
+CSE338,"Computer Networks",3,101
+CSE347,"Information System Analysis and Design",3,101
+CSE350,"Computer Architecture",3,101
+CSE360,"Artificial Intelligence",3,101
+CSE366,"Machine Learning",3,101
+CSE381,"Web Programming",3,101
+CSE401,"Software Engineering & Design",3,101
+CSE441,"Computer Graphics",3,101
+CSE442,"Digital Image Processing",3,101
+CSE447,"Compiler Design",3,101
+CSE479,"Cloud Computing",3,101
+CSE480,"Mobile Application Development",3,101
+CSE496,"Computer Security & Cryptography",3,101
+CSE499A,"Senior Design Project / Thesis I",2,101
+CSE499B,"Senior Design Project / Thesis II",2,101
+MAT101,"Differential and Integral Calculus",3,101
+PHY109,"Engineering Physics & Electromagnetics",4,101
+ENG101,"Basic Functional English",3,101
+EEE101,"Electrical Circuits I",3,102
+BBA101,"Principles of Management",3,103

@@ -1,0 +1,5 @@
+Student_ID,First_name,Last_name,E_mail,Password,Address,DOB,Faculty_ID,Dept_ID
+2023-3-60-621,Tanvir,Ahmed,tanvir.621@std.ewubd.edu,$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9,"House 45, Road 12, Block C, Aftabnagar, Dhaka",2002-05-14,1652688915,101
+2023-3-60-622,Anika,Rahman,anika.622@std.ewubd.edu,$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9,"Sector 7, Uttara, Dhaka",2003-08-22,1652688916,101
+2023-3-60-623,Sabbir,Hossain,sabbir.623@std.ewubd.edu,$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9,"Badda, Rampura, Dhaka",2001-11-03,1652688917,102
+2023-3-60-624,Mahir,Faisal,mahir.624@std.ewubd.edu,$2y$10$5M8yvW7cX9L0b8a1Z2G3H4.I5j6K7L8M9N0O1P2Q3R4S5T6U7V8W9,"Dhanmondi 32, Dhaka",2002-01-19,1652688918,103

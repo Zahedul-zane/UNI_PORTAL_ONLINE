@@ -1,0 +1,10 @@
+Pre_Advising_ID,Course_ID,Status
+1,CSE101,Approved
+1,CSE102,Approved
+1,CSE104,Approved
+1,CSE207,Approved
+1,CSE302,Approved
+1,CSE325,Pending
+2,CSE302,Approved
+2,CSE401,Pending
+3,EEE101,Pending
