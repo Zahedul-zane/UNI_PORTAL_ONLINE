@@ -46,14 +46,15 @@
                 </button>
             </form>
 
-            <!-- Quick Demo Login Helpers -->
-            <div class="demo-credentials-box">
-                <h4>⚡ Demo Credentials (Click to Auto-fill):</h4>
-                <div class="demo-chip-list">
-                    <div class="demo-chip" onclick="fillDemo('student', '2023-3-60-621', 'student123')">🎓 Student: 2023-3-60-621</div>
-                    <div class="demo-chip" onclick="fillDemo('faculty', '1652688915', 'faculty123')">👨‍🏫 Faculty: 1652688915</div>
-                    <div class="demo-chip" onclick="fillDemo('admin', 'admin', 'admin123')">🔑 Admin: admin</div>
-                </div>
+            <!-- Registration Link -->
+            <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(0, 0, 0, 0.08); text-align: center;">
+                <p style="margin: 0 0 10px; color: #64748b; font-size: 0.9rem;">
+                    Don't have an account yet?
+                </p>
+                <a href="/register.html" class="btn btn-outline" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-decoration: none; font-weight: 600; padding: 10px 18px; border-radius: 12px;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                    Student & Faculty Registration
+                </a>
             </div>
         </div>
     </div>
@@ -76,12 +77,6 @@
             if (role === 'student') label.innerText = 'Student ID (e.g. 2023-3-60-621)';
             else if (role === 'faculty') label.innerText = 'Faculty ID (e.g. 1652688915)';
             else label.innerText = 'Username (admin)';
-        }
-
-        function fillDemo(role, id, pass) {
-            setRole(role);
-            document.getElementById('user_id').value = id;
-            document.getElementById('password').value = pass;
         }
 
         async function handleLogin(e) {

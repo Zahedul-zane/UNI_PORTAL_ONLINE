@@ -19,9 +19,9 @@ const App = {
             } else {
                 this.user = null;
                 localStorage.removeItem('ewu_token');
-                // If not on login.html or index.html, redirect to login
+                // If not on login.html, register.html or index.html, redirect to login
                 const currentPath = window.location.pathname;
-                if (!currentPath.endsWith('login.html') && currentPath !== '/' && !currentPath.endsWith('index.html')) {
+                if (!currentPath.endsWith('login.html') && !currentPath.endsWith('register.html') && currentPath !== '/' && !currentPath.endsWith('index.html')) {
                     window.location.href = '/login.html';
                 }
             }

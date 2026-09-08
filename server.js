@@ -213,6 +213,208 @@ app.post('/api/login', (req, res) => {
     res.status(400).json({ success: false, error: 'Invalid role selected.' });
 });
 
+// ─── PUBLIC DEPARTMENTS ROUTE (FOR REGISTRATION) ───────────────────────────
+
+app.get('/api/departments', (req, res) => {
+    const deptRows = engine.tables['department']?.rows || [];
+    res.json({
+        success: true,
+        departments: deptRows.map(d => ({
+            dept_id: d.Dept_ID,
+            dept_name: d.Dept_Name
+        }))
+    });
+});
+
+// ─── USER REGISTRATION ROUTE ───────────────────────────────────────────────────
+
+app.post('/api/register', (req, res) => {
+    const role = (req.body.selected_role || req.body.role || 'student').toLowerCase().trim();
+    const firstName = (req.body.first_name || '').trim();
+    const lastName = (req.body.last_name || '').trim();
+    const email = (req.body.email || '').trim().toLowerCase();
+    const password = req.body.password || '';
+    const deptId = (req.body.dept_id || '101').trim();
+    const phone = (req.body.phone || '').trim();
+    const address = (req.body.address || '').trim();
+    const dob = (req.body.dob || '').trim();
+
+    if (!firstName || !email || !password) {
+        return res.status(400).json({
+            success: false,
+            error: 'Please fill in all required fields (First Name, Email, Password).'
+        });
+    }
+
+    if (password.length < 6) {
+        return res.status(400).json({
+            success: false,
+            error: 'Password must be at least 6 characters long.'
+        });
+    }
+
+    // Check email uniqueness across students, faculty, and admin
+    const students = engine.tables['student']?.rows || [];
+    const facultyList = engine.tables['faculty']?.rows || [];
+    const admins = engine.tables['admin']?.rows || [];
+
+    if (students.some(s => (s.E_mail || '').toLowerCase() === email) ||
+        facultyList.some(f => (f.E_mail || '').toLowerCase() === email) ||
+        admins.some(a => (a.E_mail || '').toLowerCase() === email)) {
+        return res.status(400).json({
+            success: false,
+            error: 'An account with this email address already exists. Please sign in.'
+        });
+    }
+
+    if (role === 'student') {
+        let studentId = (req.body.student_id || '').trim();
+        if (studentId) {
+            if (students.some(s => s.Student_ID === studentId)) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Student ID ${studentId} is already registered. Please enter a different ID or leave blank to auto-generate.`
+                });
+            }
+        } else {
+            // Auto-generate official EWU Student ID format: YYYY-Semester-Dept-Roll (e.g. 2024-3-60-625)
+            let maxRoll = 620;
+            for (const s of students) {
+                const parts = (s.Student_ID || '').split('-');
+                if (parts.length === 4) {
+                    const roll = parseInt(parts[3], 10);
+                    if (!isNaN(roll) && roll > maxRoll) {
+                        maxRoll = roll;
+                    }
+                }
+            }
+            const nextRoll = maxRoll + 1;
+            const currentYear = new Date().getFullYear();
+            studentId = `${currentYear}-3-60-${nextRoll}`;
+        }
+
+        // Auto-assign faculty advisor from department
+        let advisorId = '';
+        const deptFaculty = facultyList.filter(f => f.Dept_ID === deptId);
+        if (deptFaculty.length > 0) {
+            advisorId = deptFaculty[0].Faculty_ID;
+        } else if (facultyList.length > 0) {
+            advisorId = facultyList[0].Faculty_ID;
+        }
+
+        // Add to student table
+        students.push({
+            Student_ID: studentId,
+            First_name: firstName,
+            Last_name: lastName,
+            E_mail: email,
+            Password: password,
+            Address: address,
+            DOB: dob,
+            Faculty_ID: advisorId,
+            Dept_ID: deptId
+        });
+
+        // Add to student_phonenum table
+        if (phone) {
+            const phoneRows = engine.tables['student_phonenum']?.rows || [];
+            phoneRows.push({
+                Student_ID: studentId,
+                Phone_Number1: phone,
+                Phone_Number2: ''
+            });
+            engine.saveTable('student_phonenum');
+        }
+
+        engine.saveTable('student');
+        engine.generateMasterFiles();
+
+        const fullName = `${firstName} ${lastName}`.trim();
+        const sessionData = {
+            userId: studentId,
+            role: 'student',
+            name: fullName,
+            email: email,
+            lastActive: Date.now()
+        };
+        const token = generateSessionToken(sessionData);
+        sessions.set(token, sessionData);
+
+        res.cookie('ewu_session', token, { path: '/', httpOnly: true });
+        return res.json({
+            success: true,
+            message: `Registration successful! Your official Student ID is ${studentId}.`,
+            token,
+            role: 'student',
+            user_id: studentId,
+            name: fullName,
+            email
+        });
+
+    } else if (role === 'faculty') {
+        const designation = (req.body.designation || 'Lecturer').trim();
+        const roomNo = (req.body.room_no || 'AB1-401').trim();
+
+        // Auto-generate 10-digit Faculty ID
+        let maxFacId = 1652688918;
+        for (const f of facultyList) {
+            const num = parseInt(f.Faculty_ID, 10);
+            if (!isNaN(num) && num > maxFacId) {
+                maxFacId = num;
+            }
+        }
+        const newFacultyId = String(maxFacId + 1);
+
+        facultyList.push({
+            Faculty_ID: newFacultyId,
+            First_name: firstName,
+            Last_name: lastName,
+            Designation: designation,
+            Room_No: roomNo,
+            E_mail: email,
+            Password: password,
+            Dept_ID: deptId
+        });
+
+        if (phone) {
+            const phoneRows = engine.tables['faculty_phonenum']?.rows || [];
+            phoneRows.push({
+                Faculty_ID: newFacultyId,
+                Phone_Number1: phone,
+                Phone_Number2: ''
+            });
+            engine.saveTable('faculty_phonenum');
+        }
+
+        engine.saveTable('faculty');
+        engine.generateMasterFiles();
+
+        const fullName = `${firstName} ${lastName}`.trim();
+        const sessionData = {
+            userId: newFacultyId,
+            role: 'faculty',
+            name: fullName,
+            email: email,
+            lastActive: Date.now()
+        };
+        const token = generateSessionToken(sessionData);
+        sessions.set(token, sessionData);
+
+        res.cookie('ewu_session', token, { path: '/', httpOnly: true });
+        return res.json({
+            success: true,
+            message: `Faculty registration successful! Your Faculty ID is ${newFacultyId}.`,
+            token,
+            role: 'faculty',
+            user_id: newFacultyId,
+            name: fullName,
+            email
+        });
+    }
+
+    res.status(400).json({ success: false, error: 'Invalid registration role.' });
+});
+
 app.get('/api/me', (req, res) => {
     if (!req.userId) {
         return res.json({ logged_in: false });
