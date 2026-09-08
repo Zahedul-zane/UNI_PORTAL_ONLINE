@@ -16,7 +16,15 @@ const TABLE_NAMES = [
 
 class ExcelEngine {
     constructor(dataDir = 'data') {
-        this.dataDir = path.resolve(__dirname, dataDir);
+        const possibleDirs = [
+            path.resolve(__dirname, dataDir),
+            path.resolve(process.cwd(), dataDir),
+            path.resolve(__dirname, '..', dataDir),
+            path.resolve(__dirname, '../..', dataDir),
+            path.join('/var/task', dataDir),
+            path.join('/var/task/netlify/functions', dataDir)
+        ];
+        this.dataDir = possibleDirs.find(d => fs.existsSync(d)) || path.resolve(__dirname, dataDir);
         this.tables = {};
         this.tableNames = TABLE_NAMES;
         this.loadAll();
@@ -58,7 +66,14 @@ class ExcelEngine {
 
     // --- Load Table from CSV ---
     loadTable(tblName) {
-        const csvPath = path.join(this.dataDir, `${tblName}.csv`);
+        let csvPath = path.join(this.dataDir, `${tblName}.csv`);
+        
+        // In serverless environments, check if a modified copy exists in /tmp
+        const tmpPath = path.join('/tmp', 'data', `${tblName}.csv`);
+        if (fs.existsSync(tmpPath)) {
+            csvPath = tmpPath;
+        }
+
         if (!fs.existsSync(csvPath)) {
             this.tables[tblName] = { name: tblName, headers: [], rows: [] };
             return false;
@@ -95,8 +110,12 @@ class ExcelEngine {
     }
 
     loadAll() {
-        if (!fs.existsSync(this.dataDir)) {
-            fs.mkdirSync(this.dataDir, { recursive: true });
+        try {
+            if (!fs.existsSync(this.dataDir)) {
+                fs.mkdirSync(this.dataDir, { recursive: true });
+            }
+        } catch (e) {
+            // Ignore directory creation failure on read-only filesystems
         }
 
         for (const name of this.tableNames) {
@@ -104,7 +123,11 @@ class ExcelEngine {
         }
 
         // Generate Master Excel files if not present or on startup
-        this.generateMasterFiles();
+        try {
+            this.generateMasterFiles();
+        } catch (e) {
+            // Ignore master file generation error on read-only environments
+        }
     }
 
     // --- Save Table to CSV ---
@@ -124,7 +147,21 @@ class ExcelEngine {
             lines.push(rowFields.join(','));
         }
 
-        fs.writeFileSync(csvPath, lines.join('\n') + '\n', 'utf8');
+        const content = lines.join('\n') + '\n';
+        try {
+            fs.writeFileSync(csvPath, content, 'utf8');
+        } catch (err) {
+            // Read-only filesystem fallback (e.g. AWS Lambda / Netlify Functions)
+            try {
+                const tmpDir = path.join('/tmp', 'data');
+                if (!fs.existsSync(tmpDir)) {
+                    fs.mkdirSync(tmpDir, { recursive: true });
+                }
+                fs.writeFileSync(path.join(tmpDir, `${tblName}.csv`), content, 'utf8');
+            } catch (tmpErr) {
+                console.warn(`[ExcelEngine] Disk write skipped (${tblName}):`, err.message);
+            }
+        }
         return true;
     }
 
@@ -132,7 +169,11 @@ class ExcelEngine {
         for (const name of this.tableNames) {
             this.saveTable(name);
         }
-        this.generateMasterFiles();
+        try {
+            this.generateMasterFiles();
+        } catch (e) {
+            // Ignore on read-only filesystems
+        }
     }
 
     // --- Generate Master .xlsx Workbook and .xml Spreadsheet ---

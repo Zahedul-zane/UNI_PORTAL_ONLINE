@@ -18,6 +18,45 @@ const engine = new ExcelEngine('data');
 // In-Memory Session Store
 const sessions = new Map();
 
+// Stateless Token Helpers for Serverless (e.g. Netlify Functions)
+const JWT_SECRET = process.env.JWT_SECRET || 'ewu_portal_secret_key_2024';
+
+function generateSessionToken(sessionData) {
+    const payload = {
+        ...sessionData,
+        createdAt: Date.now()
+    };
+    const dataStr = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    const sig = crypto.createHmac('sha256', JWT_SECRET).update(dataStr).digest('base64url');
+    return `${dataStr}.${sig}`;
+}
+
+function verifySessionToken(token) {
+    if (!token || typeof token !== 'string') return null;
+    try {
+        const dotIdx = token.lastIndexOf('.');
+        if (dotIdx === -1) return null;
+        const dataStr = token.substring(0, dotIdx);
+        const sig = token.substring(dotIdx + 1);
+        const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(dataStr).digest('base64url');
+        if (sig !== expectedSig) return null;
+        return JSON.parse(Buffer.from(dataStr, 'base64url').toString('utf8'));
+    } catch (e) {
+        return null;
+    }
+}
+
+// Request URL Normalization for Netlify Functions & Serverless
+app.use((req, res, next) => {
+    if (req.url.startsWith('/.netlify/functions/api')) {
+        req.url = req.url.replace('/.netlify/functions/api', '/api');
+    }
+    if (!req.url.startsWith('/api') && !req.url.startsWith('/assets') && !req.url.startsWith('/images') && !req.url.endsWith('.html')) {
+        req.url = '/api' + (req.url.startsWith('/') ? req.url : '/' + req.url);
+    }
+    next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,14 +70,22 @@ app.use((req, res, next) => {
         token = authHeader.substring(7).trim();
     }
 
-    if (token && sessions.has(token)) {
-        const sess = sessions.get(token);
-        sess.lastActive = Date.now();
-        req.userToken = token;
-        req.userId = sess.userId;
-        req.userRole = sess.role;
-        req.userName = sess.name;
-        req.userEmail = sess.email;
+    if (token) {
+        let sess = sessions.get(token);
+        if (!sess) {
+            sess = verifySessionToken(token);
+            if (sess) {
+                sessions.set(token, sess);
+            }
+        }
+        if (sess) {
+            sess.lastActive = Date.now();
+            req.userToken = token;
+            req.userId = sess.userId;
+            req.userRole = sess.role;
+            req.userName = sess.name;
+            req.userEmail = sess.email;
+        }
     }
     next();
 });
@@ -82,14 +129,15 @@ app.post('/api/login', (req, res) => {
         if (student) {
             if (password === 'student123' || password === student.Password || (student.Password && student.Password.includes('$2y$'))) {
                 const fullName = `${student.First_name || ''} ${student.Last_name || ''}`.trim();
-                const token = crypto.randomUUID();
-                sessions.set(token, {
+                const sessionData = {
                     userId: student.Student_ID,
                     role: 'student',
                     name: fullName,
                     email: student.E_mail || '',
                     lastActive: Date.now()
-                });
+                };
+                const token = generateSessionToken(sessionData);
+                sessions.set(token, sessionData);
 
                 res.cookie('ewu_session', token, { path: '/', httpOnly: true });
                 return res.json({
@@ -110,14 +158,15 @@ app.post('/api/login', (req, res) => {
         if (faculty) {
             if (password === 'faculty123' || password === faculty.Password || (faculty.Password && faculty.Password.includes('$2y$'))) {
                 const fullName = `${faculty.First_name || ''} ${faculty.Last_name || ''}`.trim();
-                const token = crypto.randomUUID();
-                sessions.set(token, {
+                const sessionData = {
                     userId: faculty.Faculty_ID,
                     role: 'faculty',
                     name: fullName,
                     email: faculty.E_mail || '',
                     lastActive: Date.now()
-                });
+                };
+                const token = generateSessionToken(sessionData);
+                sessions.set(token, sessionData);
 
                 res.cookie('ewu_session', token, { path: '/', httpOnly: true });
                 return res.json({
@@ -137,14 +186,15 @@ app.post('/api/login', (req, res) => {
         const admin = admins.find(a => a.Username === userId);
         if (admin) {
             if (password === 'admin123' || password === admin.Password || (admin.Password && admin.Password.includes('$2y$'))) {
-                const token = crypto.randomUUID();
-                sessions.set(token, {
+                const sessionData = {
                     userId: admin.Admin_ID,
                     role: 'admin',
                     name: admin.Full_Name || 'System Administrator',
                     email: admin.E_mail || '',
                     lastActive: Date.now()
-                });
+                };
+                const token = generateSessionToken(sessionData);
+                sessions.set(token, sessionData);
 
                 res.cookie('ewu_session', token, { path: '/', httpOnly: true });
                 return res.json({
@@ -1524,20 +1574,26 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start Server
-const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log('======================================================');
-    console.log('  East West University Portal - Node.js Server        ');
-    console.log(`  Running on: http://localhost:${PORT}               `);
-    console.log('  Database Engine: 100% Excel Spreadsheets (.xlsx)    ');
-    console.log('======================================================');
-});
+// Start Server (when run directly via `node server.js`)
+if (require.main === module) {
+    const server = app.listen(PORT, '0.0.0.0', () => {
+        console.log('======================================================');
+        console.log('  East West University Portal - Node.js Server        ');
+        console.log(`  Running on: http://localhost:${PORT}               `);
+        console.log('  Database Engine: 100% Excel Spreadsheets (.xlsx)    ');
+        console.log('======================================================');
+    });
 
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.log(`[INFO] Port ${PORT} is already in use by a running instance.`);
-        console.log(`The portal is already active at: http://localhost:${PORT}`);
-    } else {
-        console.error('Server error:', err);
-    }
-});
+    server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.log(`[INFO] Port ${PORT} is already in use by a running instance.`);
+            console.log(`The portal is already active at: http://localhost:${PORT}`);
+        } else {
+            console.error('Server error:', err);
+        }
+    });
+}
+
+module.exports = app;
+module.exports.engine = engine;
+module.exports.sessions = sessions;

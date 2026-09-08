@@ -17,6 +17,7 @@
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
+    "serverless-http": "^4.0.0",
     "xlsx": "^0.18.5"
   }
 }
