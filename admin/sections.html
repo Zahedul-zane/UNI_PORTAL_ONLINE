@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Sections & Scheduling - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .slot-pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .slot-chip {
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .slot-chip:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+        .slot-chip.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #1d4ed8;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+        }
+        .day-filter-btn {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #64748b;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .day-filter-btn.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+        .clash-warning {
+            background: #fef2f2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .conflict-free-badge {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Class Sections & Scheduling</h1>
+                        <p class="page-subtitle">Schedule class sections with strict conflict prevention. Section and Time Slot uniqueness guaranteed.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px;">
+                    <!-- Schedule New Section Form -->
+                    <div class="card" style="padding: 24px; height: fit-content;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px; display:flex; align-items:center; gap:8px;">
+                            ⏱️ Schedule Class Section
+                        </h3>
+                        <form id="section-form" onsubmit="saveSection(event)">
+                            <div class="form-group">
+                                <label for="sec-course">Select Course</label>
+                                <select id="sec-course" class="form-control" onchange="onCourseChange()" required></select>
+                                <div id="existing-sections-info" style="font-size:0.75rem; color:#64748b; margin-top:4px;"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sec-no">Section Number (Unique for Course)</label>
+                                <input type="number" id="sec-no" class="form-control" value="1" min="1" oninput="runLiveClashCheck()" required>
+                                <div id="sec-no-status" style="font-size:0.75rem; margin-top:4px;"></div>
+                            </div>
+
+                            <!-- Clickable Time Slot Picker -->
+                            <div class="form-group">
+                                <label style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span>Select Time Slot (Click to Pick)</span>
+                                    <span id="selected-slot-preview" style="font-size:0.75rem; font-weight:700; color:#2563eb;"></span>
+                                </label>
+
+                                <!-- Day filter tabs -->
+                                <div style="display:flex; gap:6px; margin-bottom:6px; flex-wrap:wrap;">
+                                    <button type="button" class="day-filter-btn active" onclick="filterSlotDays('ALL', this)">All Days</button>
+                                    <button type="button" class="day-filter-btn" onclick="filterSlotDays('SUN-TUE', this)">Sun-Tue</button>
+                                    <button type="button" class="day-filter-btn" onclick="filterSlotDays('MON-WED', this)">Mon-Wed</button>
+                                    <button type="button" class="day-filter-btn" onclick="filterSlotDays('THU-SAT', this)">Thu-Sat</button>
+                                    <button type="button" class="day-filter-btn" onclick="filterSlotDays('FRI', this)">Fri (Lab)</button>
+                                </div>
+
+                                <!-- Clickable Chips Container -->
+                                <div class="slot-pill-container" id="slot-chips-list">
+                                    <!-- Rendered by JS -->
+                                </div>
+                                <input type="hidden" id="sec-slot" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sec-room">Room Number</label>
+                                <select id="sec-room" class="form-control" onchange="onRoomOrFacultyChange()" required>
+                                    <option value="">-- Choose Room --</option>
+                                    <option value="AB1-502">AB1-502 (Capacity 40)</option>
+                                    <option value="AB2-401">AB2-401 (Capacity 35)</option>
+                                    <option value="AB2-402">AB2-402 (Capacity 35)</option>
+                                    <option value="AB3-301">AB3-301 (Capacity 45)</option>
+                                    <option value="AB3-302">AB3-302 (Capacity 45)</option>
+                                    <option value="CL1-101">CL1-101 (Computer Lab, Cap 35)</option>
+                                    <option value="CL2-201">CL2-201 (Hardware Lab, Cap 30)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sec-cap">Student Capacity</label>
+                                <input type="number" id="sec-cap" class="form-control" value="35" min="5" max="60" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sec-fac">Assigned Faculty Instructor</label>
+                                <select id="sec-fac" class="form-control" onchange="onRoomOrFacultyChange()" required></select>
+                            </div>
+
+                            <!-- Live Conflict Warning Box -->
+                            <div id="clash-warning-box" class="clash-warning">
+                                <strong id="clash-title">⚠️ Schedule Conflict Detected</strong>
+                                <div id="clash-detail" style="margin-top:4px;"></div>
+                            </div>
+
+                            <div id="conflict-free-box" class="conflict-free-badge">
+                                <strong>✓ Conflict Free</strong>: Room, Faculty, and Time Slot are available.
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="save-sec-btn" style="width: 100%; padding:12px; font-weight:700;">
+                                Schedule Section
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Sections Table -->
+                    <div class="card">
+                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <h3 class="card-title">Scheduled Class Sections</h3>
+                                <span id="total-sections-badge" style="font-size:0.8rem; background:#e0f2fe; color:#0284c7; padding:3px 10px; border-radius:12px; font-weight:600;">0 Sections</span>
+                            </div>
+                            <div>
+                                <input type="text" id="filter-search" class="form-control" placeholder="🔍 Search course, room, instructor..." oninput="filterSectionsTable()" style="padding:6px 14px; font-size:0.82rem; width:250px;">
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Section</th>
+                                        <th>Time Slot</th>
+                                        <th>Room</th>
+                                        <th>Faculty Instructor</th>
+                                        <th>Enrolled / Cap</th>
+                                        <th style="text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sections-table-body">
+                                    <tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">Loading sections...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        const STANDARD_TIME_SLOTS = [
+            // Sun-Tue
+            { day: 'SUN-TUE', slot: 'Sun-Tue 08:30 AM - 10:00 AM' },
+            { day: 'SUN-TUE', slot: 'Sun-Tue 10:10 AM - 11:40 AM' },
+            { day: 'SUN-TUE', slot: 'Sun-Tue 11:50 AM - 01:20 PM' },
+            { day: 'SUN-TUE', slot: 'Sun-Tue 01:30 PM - 03:00 PM' },
+            { day: 'SUN-TUE', slot: 'Sun-Tue 03:10 PM - 04:40 PM' },
+            { day: 'SUN-TUE', slot: 'Sun-Tue 04:50 PM - 06:20 PM' },
+            // Mon-Wed
+            { day: 'MON-WED', slot: 'Mon-Wed 08:30 AM - 10:00 AM' },
+            { day: 'MON-WED', slot: 'Mon-Wed 10:10 AM - 11:40 AM' },
+            { day: 'MON-WED', slot: 'Mon-Wed 11:50 AM - 01:20 PM' },
+            { day: 'MON-WED', slot: 'Mon-Wed 01:30 PM - 03:00 PM' },
+            { day: 'MON-WED', slot: 'Mon-Wed 03:10 PM - 04:40 PM' },
+            { day: 'MON-WED', slot: 'Mon-Wed 04:50 PM - 06:20 PM' },
+            // Thu-Sat
+            { day: 'THU-SAT', slot: 'Thu-Sat 08:30 AM - 10:00 AM' },
+            { day: 'THU-SAT', slot: 'Thu-Sat 10:10 AM - 11:40 AM' },
+            { day: 'THU-SAT', slot: 'Thu-Sat 11:50 AM - 01:20 PM' },
+            { day: 'THU-SAT', slot: 'Thu-Sat 01:30 PM - 03:00 PM' },
+            { day: 'THU-SAT', slot: 'Thu-Sat 03:10 PM - 04:40 PM' },
+            // Friday (Labs)
+            { day: 'FRI', slot: 'Fri 08:30 AM - 11:30 AM' },
+            { day: 'FRI', slot: 'Fri 02:30 PM - 05:30 PM' }
+        ];
+
+        let allSections = [];
+        let allCourses = [];
+        let allFaculty = [];
+        let activeDayFilter = 'ALL';
+
+        function renderTimeSlotChips() {
+            const container = document.getElementById('slot-chips-list');
+            const currentSlot = document.getElementById('sec-slot').value;
+            const courseId = document.getElementById('sec-course') ? document.getElementById('sec-course').value : '';
+            const roomNo = document.getElementById('sec-room') ? document.getElementById('sec-room').value.trim().toLowerCase() : '';
+            const facultyId = document.getElementById('sec-fac') ? document.getElementById('sec-fac').value : '';
+
+            const filtered = activeDayFilter === 'ALL'
+                ? STANDARD_TIME_SLOTS
+                : STANDARD_TIME_SLOTS.filter(s => s.day === activeDayFilter);
+
+            container.innerHTML = filtered.map(item => {
+                const isActive = item.slot === currentSlot ? 'active' : '';
+                let conflictTag = '';
+                let chipStyle = '';
+
+                // 1. Check course duplicate slot
+                if (courseId) {
+                    const hasCourseSlot = allSections.some(s => s.course_id === courseId && s.time_slot === item.slot);
+                    if (hasCourseSlot) {
+                        conflictTag = '⚠️ Course Slot Taken';
+                        chipStyle = 'border-color:#fca5a5; background:#fef2f2; color:#991b1b;';
+                    }
+                }
+
+                // 2. Check room clash
+                if (!conflictTag && roomNo) {
+                    const roomClash = allSections.find(s => (s.room_no || '').trim().toLowerCase() === roomNo && App.slotsOverlap(s.time_slot, item.slot));
+                    if (roomClash) {
+                        conflictTag = `🚫 Room Busy (${roomClash.course_id})`;
+                        chipStyle = 'border-color:#fca5a5; background:#fef2f2; color:#991b1b;';
+                    }
+                }
+
+                // 3. Check faculty clash
+                if (!conflictTag && facultyId) {
+                    const facClash = allSections.find(s => String(s.faculty_id) === String(facultyId) && App.slotsOverlap(s.time_slot, item.slot));
+                    if (facClash) {
+                        conflictTag = `🚫 Faculty Busy (${facClash.course_id})`;
+                        chipStyle = 'border-color:#fca5a5; background:#fef2f2; color:#991b1b;';
+                    }
+                }
+
+                return `
+                    <div class="slot-chip ${isActive}" style="${chipStyle}" onclick="selectTimeSlot('${item.slot}')">
+                        <div>${item.slot}</div>
+                        ${conflictTag ? `<div style="font-size:0.68rem; font-weight:700; margin-top:2px;">${conflictTag}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterSlotDays(day, btn) {
+            activeDayFilter = day;
+            document.querySelectorAll('.day-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTimeSlotChips();
+        }
+
+        function selectTimeSlot(slot) {
+            document.getElementById('sec-slot').value = slot;
+            document.getElementById('selected-slot-preview').innerText = slot;
+            renderTimeSlotChips();
+            runLiveClashCheck();
+        }
+
+        function onCourseChange() {
+            const courseId = document.getElementById('sec-course').value;
+            const existing = allSections.filter(s => s.course_id === courseId);
+
+            const infoDiv = document.getElementById('existing-sections-info');
+            if (existing.length > 0) {
+                infoDiv.innerHTML = `Current sections for ${courseId}: ` + existing.map(s =>
+                    `<span class="badge badge-blue" style="font-size:0.75rem; margin-right:4px;">Sec ${s.section_no} (${s.time_slot})</span>`
+                ).join('');
+            } else {
+                infoDiv.innerHTML = `No sections created for ${courseId} yet.`;
+            }
+
+            // Auto-suggest next section number
+            let maxSecNo = 0;
+            existing.forEach(s => {
+                const num = parseInt(s.section_no, 10);
+                if (!isNaN(num) && num > maxSecNo) maxSecNo = num;
+            });
+            document.getElementById('sec-no').value = maxSecNo + 1;
+
+            renderTimeSlotChips();
+            runLiveClashCheck();
+        }
+
+        function onRoomOrFacultyChange() {
+            renderTimeSlotChips();
+            runLiveClashCheck();
+        }
+
+        function filterSectionsTable() {
+            const query = (document.getElementById('filter-search')?.value || '').toLowerCase().trim();
+            if (!query) {
+                renderSectionsTable(allSections);
+                return;
+            }
+            const filtered = allSections.filter(s =>
+                (s.course_id || '').toLowerCase().includes(query) ||
+                (s.course_title || '').toLowerCase().includes(query) ||
+                (s.room_no || '').toLowerCase().includes(query) ||
+                (s.faculty_name || '').toLowerCase().includes(query) ||
+                (s.time_slot || '').toLowerCase().includes(query)
+            );
+            renderSectionsTable(filtered);
+        }
+
+        function renderSectionsTable(list) {
+            const tbody = document.getElementById('sections-table-body');
+            document.getElementById('total-sections-badge').innerText = `${list.length} Sections`;
+            if (list.length > 0) {
+                tbody.innerHTML = list.map(s => `
+                    <tr>
+                        <td>
+                            <strong style="color:#0f172a;">${App.escape(s.course_id)}</strong>
+                            <div style="font-size:0.75rem; color:#64748b;">${App.escape(s.course_title)}</div>
+                        </td>
+                        <td><span class="badge badge-blue">Sec ${s.section_no}</span></td>
+                        <td>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.875rem;">⏱️ ${App.escape(s.time_slot)}</div>
+                        </td>
+                        <td><code>${App.escape(s.room_no)}</code></td>
+                        <td>${App.escape(s.faculty_name || 'TBA')}</td>
+                        <td>
+                            <span style="font-weight:600; color:#334155;">${s.enrolled_count} / ${s.capacity}</span>
+                        </td>
+                        <td style="text-align:right;">
+                            <button onclick="deleteSection('${s.section_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No matching sections found.</td></tr>`;
+            }
+        }
+
+        function runLiveClashCheck() {
+            const courseId = document.getElementById('sec-course').value;
+            const secNo = parseInt(document.getElementById('sec-no').value, 10);
+            const timeSlot = document.getElementById('sec-slot').value.trim();
+            const roomNo = document.getElementById('sec-room').value.trim();
+            const facultyId = document.getElementById('sec-fac').value;
+
+            const warningBox = document.getElementById('clash-warning-box');
+            const detailBox = document.getElementById('clash-detail');
+            const clearBox = document.getElementById('conflict-free-box');
+            const saveBtn = document.getElementById('save-sec-btn');
+            const secNoStatus = document.getElementById('sec-no-status');
+
+            warningBox.style.display = 'none';
+            clearBox.style.display = 'none';
+            secNoStatus.innerHTML = '';
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Schedule Section';
+
+            if (!courseId) return;
+
+            // 1. Check Section Number Uniqueness for this course
+            const dupSec = allSections.find(s => s.course_id === courseId && parseInt(s.section_no, 10) === secNo);
+            if (dupSec) {
+                secNoStatus.innerHTML = `<span style="color:#ef4444; font-weight:600;">❌ Section ${secNo} already exists for ${courseId}! Section numbers must be unique.</span>`;
+                warningBox.style.display = 'block';
+                detailBox.innerText = `Duplicate Section Number: Course ${courseId} already has Section ${secNo}. Please pick a unique section number.`;
+                saveBtn.disabled = true;
+                saveBtn.innerText = 'Cannot Schedule (Duplicate Section)';
+                return;
+            } else if (secNo > 0) {
+                secNoStatus.innerHTML = `<span style="color:#10b981; font-weight:600;">✓ Section ${secNo} is unique for ${courseId}.</span>`;
+            }
+
+            if (!timeSlot) return;
+
+            // 2. Check Course Time Slot Uniqueness
+            const sameCourseSlot = allSections.find(s => s.course_id === courseId && s.time_slot === timeSlot);
+            if (sameCourseSlot) {
+                warningBox.style.display = 'block';
+                detailBox.innerText = `Time Clash: ${courseId} already has Section ${sameCourseSlot.section_no} scheduled at ${timeSlot}. A course cannot have multiple sections at the identical time slot.`;
+                saveBtn.disabled = true;
+                saveBtn.innerText = 'Cannot Schedule (Course Time Clash)';
+                return;
+            }
+
+            // 3. Check Room Clash
+            if (roomNo) {
+                for (const s of allSections) {
+                    if ((s.room_no || '').trim().toLowerCase() === roomNo.toLowerCase()) {
+                        if (App.slotsOverlap(s.time_slot, timeSlot)) {
+                            warningBox.style.display = 'block';
+                            detailBox.innerText = `Room Collision: Room ${roomNo} is already booked for ${s.course_id} (Section ${s.section_no}) at ${s.time_slot}. Clash is not acceptable!`;
+                            saveBtn.disabled = true;
+                            saveBtn.innerText = 'Cannot Schedule (Room Conflict)';
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // 4. Check Faculty Clash
+            if (facultyId) {
+                for (const s of allSections) {
+                    if (String(s.faculty_id) === String(facultyId)) {
+                        if (App.slotsOverlap(s.time_slot, timeSlot)) {
+                            warningBox.style.display = 'block';
+                            detailBox.innerText = `Faculty Clash: Selected faculty is already teaching ${s.course_id} (Section ${s.section_no}) during ${s.time_slot}. Clash is not acceptable!`;
+                            saveBtn.disabled = true;
+                            saveBtn.innerText = 'Cannot Schedule (Faculty Clash)';
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // If room, faculty, and time slot are all selected and conflict-free
+            if (roomNo && facultyId && timeSlot && secNo > 0) {
+                clearBox.style.display = 'block';
+            }
+        }
+
+        async function loadSections() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            // Load courses
+            const courseData = await App.get('/admin/courses');
+            allCourses = courseData.courses || [];
+            document.getElementById('sec-course').innerHTML = allCourses.map(c => `
+                <option value="${c.course_id}">${c.course_id} - ${c.course_title}</option>
+            `).join('');
+
+            // Load faculty
+            const facData = await App.get('/admin/faculty');
+            allFaculty = facData.faculty || [];
+            document.getElementById('sec-fac').innerHTML = allFaculty.map(f => `
+                <option value="${f.faculty_id}">${f.first_name} ${f.last_name} (${f.designation || 'Faculty'})</option>
+            `).join('');
+
+            // Load sections
+            const data = await App.get('/admin/sections');
+            allSections = data.sections || [];
+            renderSectionsTable(allSections);
+
+            // Init slot selector and initial course selection
+            renderTimeSlotChips();
+            if (allCourses.length > 0) {
+                onCourseChange();
+            }
+            // Auto pick first slot
+            selectTimeSlot(STANDARD_TIME_SLOTS[0].slot);
+        }
+
+        async function saveSection(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-sec-btn');
+
+            const course_id = document.getElementById('sec-course').value;
+            const section_no = parseInt(document.getElementById('sec-no').value, 10);
+            const time_slot = document.getElementById('sec-slot').value.trim();
+            const room_no = document.getElementById('sec-room').value.trim();
+            const capacity = parseInt(document.getElementById('sec-cap').value, 10);
+            const faculty_id = document.getElementById('sec-fac').value;
+
+            if (!time_slot) {
+                App.showAlert('Please click on a time slot to select it.', 'danger');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Scheduling...';
+
+            try {
+                const res = await App.post('/admin/sections', {
+                    course_id, section_no, time_slot, room_no, capacity, faculty_id
+                });
+                App.showAlert(res.message, 'success');
+                await loadSections();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+                btn.disabled = false;
+                btn.innerText = 'Schedule Section';
+            }
+        }
+
+        async function deleteSection(id) {
+            if (!confirm(`Are you sure you want to delete Section #${id}?`)) return;
+            try {
+                await App.delete('/admin/sections', { section_id: id });
+                App.showAlert('Section deleted.', 'success');
+                loadSections();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSections);
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "ewu-university-portal",
+  "version": "1.0.0",
+  "description": "East West University Academic Management Portal with Node.js Backend & Excel File Database",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "university-portal",
+    "excel-database",
+    "nodejs",
+    "express"
+  ],
+  "author": "East West University",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "xlsx": "^0.18.5"
+  }
+}

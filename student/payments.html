@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments & Ledger - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Payments & Financial Ledger</h1>
+                        <p class="page-subtitle">View your semester tuition dues, past transaction records, and make payments online.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Stats summary -->
+                <div class="stats-grid" style="margin-bottom: 24px;">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#ecfdf5; color:#059669;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Total Paid (Lifetime)</div>
+                            <div class="stat-value" id="total-paid" style="color:#059669;">৳0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Pending Dues</div>
+                            <div class="stat-value" id="total-pending" style="color:#d97706;">৳0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <!-- Make Payment Form -->
+                    <div class="card" style="padding: 24px; height: fit-content;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">💳 Online Tuition Payment</h3>
+                        <form id="payment-form" onsubmit="submitPayment(event)">
+                            <div class="form-group">
+                                <label for="pay-amount">Amount (BDT ৳)</label>
+                                <input type="number" id="pay-amount" class="form-control" placeholder="e.g. 18500" required min="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-semester">Semester</label>
+                                <select id="pay-semester" class="form-control">
+                                    <option value="Summer" selected>Summer</option>
+                                    <option value="Spring">Spring</option>
+                                    <option value="Fall">Fall</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-year">Year</label>
+                                <input type="number" id="pay-year" class="form-control" value="2026" readonly>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="pay-btn" style="width: 100%;">
+                                Confirm & Pay Now
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Payment History Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Transaction History</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Semester</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payment-history-body">
+                                    <tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">Loading payments...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadPayments() {
+            const authOk = await App.requireAuth('student');
+            if (!authOk) return;
+
+            const data = await App.get('/student/payments');
+            document.getElementById('total-paid').innerText = '৳' + Number(data.total_paid || 0).toLocaleString();
+            document.getElementById('total-pending').innerText = '৳' + Number(data.total_pending || 0).toLocaleString();
+
+            const tbody = document.getElementById('payment-history-body');
+            const payments = data.payments || [];
+
+            if (payments.length > 0) {
+                tbody.innerHTML = payments.map(p => `
+                    <tr>
+                        <td><code>${App.escape(p.transaction_id)}</code></td>
+                        <td>${App.escape(p.semester)} ${p.year}</td>
+                        <td><strong>৳${Number(p.amount || 0).toLocaleString()}</strong></td>
+                        <td>${p.payment_date ? App.escape(p.payment_date) : '<span style="color:#94a3b8;">Pending</span>'}</td>
+                        <td>
+                            <span class="badge badge-${p.status === 'Paid' ? 'success' : 'warning'}">
+                                ${App.escape(p.status)}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">No payment transactions recorded.</td></tr>`;
+            }
+        }
+
+        async function submitPayment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('pay-btn');
+            btn.disabled = true;
+            btn.innerText = 'Processing Payment...';
+
+            const amount = parseFloat(document.getElementById('pay-amount').value);
+            const semester = document.getElementById('pay-semester').value;
+            const year = parseInt(document.getElementById('pay-year').value);
+
+            try {
+                const res = await App.post('/student/payments', { amount, semester, year });
+                App.showAlert(res.message, 'success');
+                document.getElementById('pay-amount').value = '';
+                loadPayments();
+            } catch (err) {
+                App.showAlert(err.message || 'Payment submission failed.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Confirm & Pay Now';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPayments);
+    </script>
+</body>
+</html>

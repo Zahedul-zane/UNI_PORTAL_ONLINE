@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Course Advising - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .advising-metric-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .advising-metric-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: var(--neo-xs);
+        }
+
+        /* Timetable Matrix */
+        .timetable-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+            padding: 12px;
+            margin-bottom: 24px;
+        }
+        .timetable-grid {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px;
+            min-width: 800px;
+        }
+        .timetable-grid th {
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #475569;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            box-shadow: var(--neo-xs);
+        }
+        .timetable-grid td {
+            height: 70px;
+            padding: 6px;
+            vertical-align: top;
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: 8px;
+            border: 1px dashed rgba(203, 213, 225, 0.7);
+            transition: all 0.25s ease;
+            font-size: 0.75rem;
+        }
+        .timetable-grid td.time-col {
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            vertical-align: middle;
+            background: rgba(241, 245, 249, 0.8);
+            border-style: solid;
+            width: 140px;
+        }
+        .timetable-grid td.slot-occupied {
+            background: linear-gradient(135deg, #1e3a8a, #0284c7);
+            color: #ffffff;
+            border: 1px solid #0369a1;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+        }
+        .timetable-grid td.preview-free {
+            background: #dcfce7 !important;
+            border: 2px dashed #16a34a !important;
+            box-shadow: 0 0 10px rgba(22, 163, 74, 0.3);
+            color: #166534;
+        }
+        .timetable-grid td.preview-clash {
+            background: #fee2e2 !important;
+            border: 2px solid #dc2626 !important;
+            box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
+            color: #991b1b;
+            animation: pulse-border 1s infinite alternate;
+        }
+        @keyframes pulse-border {
+            from { border-color: #ef4444; }
+            to { border-color: #991b1b; }
+        }
+
+        /* Section Selection Cards */
+        .sections-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .section-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .section-box:hover:not(.status-clash):not(.status-enrolled):not(.status-full) {
+            transform: translateY(-3px);
+            border-color: #2563eb;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+        }
+        .section-box.status-available {
+            border-color: #cbd5e1;
+        }
+        .section-box.status-available:hover {
+            border-color: #0284c7;
+        }
+        .section-box.status-clash {
+            background: #fff5f5;
+            border-color: #fca5a5;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);
+        }
+        .section-box.status-enrolled {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        .section-box.status-full {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            opacity: 0.85;
+        }
+        .clash-badge-alert {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body class="app-body portal-inside-bg">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <h1 class="page-title">Official Course Advising (Summer 2026)</h1>
+                        <p class="page-subtitle">Select class sections and time slots created by the administration. Real-time clash detection guarantees a 100% conflict-free schedule.</p>
+                    </div>
+                    <div>
+                        <span class="badge badge-success" style="padding:8px 16px; font-size:0.85rem;">
+                            🟢 Advising Window: OPEN
+                        </span>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- KPI Metric Highlights -->
+                <div class="stat-grid" style="margin-bottom: 24px;">
+                    <div class="advising-metric-card">
+                        <div class="advising-metric-icon" style="background:#e0f2fe; color:#0284c7;">📘</div>
+                        <div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#0f2b48;" id="metric-enrolled-count">0 Courses</div>
+                            <div style="font-size:0.8rem; color:#64748b; font-weight:600;">Registered Sections</div>
+                        </div>
+                    </div>
+                    <div class="advising-metric-card">
+                        <div class="advising-metric-icon" style="background:#dcfce7; color:#16a34a;">🎓</div>
+                        <div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#0f2b48;" id="metric-credits-count">0.0 / 15.0</div>
+                            <div style="font-size:0.8rem; color:#64748b; font-weight:600;">Total Credits Enrolled</div>
+                        </div>
+                    </div>
+                    <div class="advising-metric-card">
+                        <div class="advising-metric-icon" style="background:#fef3c7; color:#d97706;">⏱️</div>
+                        <div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#0f2b48;" id="metric-conflict-status">Zero Conflicts</div>
+                            <div style="font-size:0.8rem; color:#64748b; font-weight:600;">Schedule Integrity</div>
+                        </div>
+                    </div>
+                    <div class="advising-metric-card">
+                        <div class="advising-metric-icon" style="background:#f3e8ff; color:#9333ea;">🏛️</div>
+                        <div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#0f2b48;">Summer 2026</div>
+                            <div style="font-size:0.8rem; color:#64748b; font-weight:600;">Academic Term</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Weekly Timetable -->
+                <div class="timetable-container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 4px;">
+                        <h3 style="margin:0; font-size:1rem; font-weight:700; color:#0f2b48; display:flex; align-items:center; gap:8px;">
+                            📅 Weekly Timetable Matrix
+                        </h3>
+                        <div style="display:flex; gap:12px; font-size:0.75rem;">
+                            <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; border-radius:3px; background:#0284c7; display:inline-block;"></span> Enrolled Slot</span>
+                            <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; border-radius:3px; background:#dcfce7; border:1px dashed #16a34a; display:inline-block;"></span> Free Slot</span>
+                            <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; border-radius:3px; background:#fee2e2; border:1px solid #ef4444; display:inline-block;"></span> Time Clash</span>
+                        </div>
+                    </div>
+                    <table class="timetable-grid" id="timetable-table">
+                        <thead>
+                            <tr>
+                                <th style="width:130px;">Time Period</th>
+                                <th>Sunday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetable-body">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Currently Registered Sections Table -->
+                <div class="card" style="margin-bottom: 26px;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title">My Registered Sections (Summer 2026)</h3>
+                        <span id="registered-badge" class="badge badge-info">0 Courses</span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Course Title</th>
+                                        <th>Section</th>
+                                        <th>Time Slot</th>
+                                        <th>Room</th>
+                                        <th>Credits</th>
+                                        <th style="text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enrolled-sections-body">
+                                    <tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">Loading registered sections...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Approved Courses & Sections with 1-Click Selection -->
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 class="card-title">Available Sections for Pre-Advised Courses</h3>
+                            <p style="font-size:0.8rem; color:#64748b; margin-top:2px;">
+                                Click on any available section to select and enroll. Clashing time slots are automatically detected and rejected.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-body" id="available-sections-container" style="padding: 22px;">
+                        <p style="color: #94a3b8;">Loading approved courses and scheduled sections...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Clash Details Modal -->
+    <div id="clash-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="padding:20px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size:1.1rem; color:#991b1b; display:flex; align-items:center; gap:8px;">
+                    ⚠️ Schedule Clash Detected
+                </h3>
+                <button onclick="closeClashModal()" style="background:none; border:none; font-size:1.4rem; color:#64748b; cursor:pointer;">&times;</button>
+            </div>
+            <div style="padding:22px;">
+                <p style="color:#334155; margin-bottom:14px; font-size:0.92rem;">
+                    This section conflicts directly with an existing course in your Summer 2026 schedule:
+                </p>
+                <div style="background:#fef2f2; border:1px solid #f87171; border-radius:8px; padding:16px; margin-bottom:16px;">
+                    <div style="font-weight:700; color:#991b1b; margin-bottom:6px;" id="modal-clash-target">Target Section</div>
+                    <div style="color:#b91c1c; font-size:0.85rem;" id="modal-clash-reason">Conflicts with...</div>
+                </div>
+                <div style="background:#eff6ff; border:1px solid #93c5fd; border-radius:8px; padding:12px; font-size:0.85rem; color:#1e40af;">
+                    <strong>Rule:</strong> University policy strictly prohibits overlapping class sections. To take this section, you must first drop the conflicting course from your registered list.
+                </div>
+            </div>
+            <div style="padding:16px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; text-align:right;">
+                <button onclick="closeClashModal()" class="btn btn-primary btn-sm">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        const TIMETABLE_PERIODS = [
+            { label: '08:30 AM - 10:00 AM', start: 510, end: 600 },
+            { label: '10:10 AM - 11:40 AM', start: 610, end: 700 },
+            { label: '11:50 AM - 01:20 PM', start: 710, end: 800 },
+            { label: '01:30 PM - 03:00 PM', start: 810, end: 900 },
+            { label: '03:10 PM - 04:40 PM', start: 910, end: 1000 },
+            { label: '04:50 PM - 06:20 PM', start: 1010, end: 1100 }
+        ];
+
+        const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        let currentEnrolled = [];
+        let currentApproved = [];
+
+        async function loadAdvising() {
+            const authOk = await App.requireAuth('student');
+            if (!authOk) return;
+
+            try {
+                const data = await App.get('/student/advising-courses');
+                currentEnrolled = data.enrolled_sections || [];
+                currentApproved = data.approved_courses || [];
+
+                renderMetrics();
+                renderTimetable();
+                renderEnrolledTable();
+                renderAvailableCourses();
+            } catch (err) {
+                App.showAlert(err.message || 'Error loading advising data', 'danger');
+            }
+        }
+
+        function renderMetrics() {
+            const enrolledCount = currentEnrolled.length;
+            let totalCredits = 0;
+            currentEnrolled.forEach(e => {
+                const cr = parseFloat(e.credits);
+                if (!isNaN(cr)) totalCredits += cr;
+            });
+
+            document.getElementById('metric-enrolled-count').innerText = `${enrolledCount} Courses`;
+            document.getElementById('metric-credits-count').innerText = `${totalCredits.toFixed(1)} / 15.0`;
+            document.getElementById('registered-badge').innerText = `${enrolledCount} Registered Courses (${totalCredits.toFixed(1)} Credits)`;
+        }
+
+        function renderTimetable() {
+            const tbody = document.getElementById('timetable-body');
+
+            tbody.innerHTML = TIMETABLE_PERIODS.map(period => {
+                const periodSlotStr = `Sun-Tue ${period.label}`;
+
+                const cells = WEEKDAYS.map(day => {
+                    // Find if any enrolled section covers this day and period
+                    const enrolledInCell = currentEnrolled.find(sec => {
+                        const parsed = App.parseTimeSlots(sec.time_slot);
+                        for (const p of parsed) {
+                            const dayMatch = p.days.some(d => d.toLowerCase() === day.toLowerCase());
+                            if (dayMatch) {
+                                // check interval overlap
+                                if (p.startMins < period.end && period.start < p.endMins) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    });
+
+                    if (enrolledInCell) {
+                        return `
+                            <td class="slot-occupied" id="cell-${day}-${period.start}">
+                                <div style="font-weight:800; font-size:0.8rem;">${App.escape(enrolledInCell.course_id)}</div>
+                                <div style="font-size:0.7rem; opacity:0.9;">Sec ${enrolledInCell.section_no} • ${App.escape(enrolledInCell.room_no)}</div>
+                            </td>
+                        `;
+                    } else {
+                        return `
+                            <td id="cell-${day}-${period.start}" style="color:#94a3b8; text-align:center; vertical-align:middle;">
+                                <span style="font-size:0.7rem;">Free</span>
+                            </td>
+                        `;
+                    }
+                }).join('');
+
+                return `
+                    <tr>
+                        <td class="time-col">${period.label}</td>
+                        ${cells}
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function previewSlotOnTimetable(slotStr, isClash) {
+            const parsed = App.parseTimeSlots(slotStr);
+            for (const p of parsed) {
+                for (const d of p.days) {
+                    for (const period of TIMETABLE_PERIODS) {
+                        if (p.startMins < period.end && period.start < p.endMins) {
+                            const cell = document.getElementById(`cell-${d}-${period.start}`);
+                            if (cell) {
+                                if (isClash) {
+                                    cell.classList.add('preview-clash');
+                                } else {
+                                    cell.classList.add('preview-free');
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function clearTimetablePreview() {
+            document.querySelectorAll('.timetable-grid td').forEach(td => {
+                td.classList.remove('preview-free');
+                td.classList.remove('preview-clash');
+            });
+        }
+
+        function renderEnrolledTable() {
+            const enrBody = document.getElementById('enrolled-sections-body');
+            if (currentEnrolled.length > 0) {
+                enrBody.innerHTML = currentEnrolled.map(e => `
+                    <tr>
+                        <td><strong>${App.escape(e.course_id)}</strong></td>
+                        <td>${App.escape(e.course_title)}</td>
+                        <td><span class="badge badge-info">Section ${e.section_no}</span></td>
+                        <td><strong style="color:#0f2b48;">⏱️ ${App.escape(e.time_slot)}</strong></td>
+                        <td><code>${App.escape(e.room_no)}</code></td>
+                        <td><strong>${e.credits || '3.0'}</strong></td>
+                        <td style="text-align:right;">
+                            <button onclick="dropSection('${e.enrollment_id}', '${App.escape(e.course_id)}', '${e.section_no}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">
+                                Drop Section
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                enrBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">No sections registered yet for Summer 2026. Choose and click a section below to enroll.</td></tr>`;
+            }
+        }
+
+        function renderAvailableCourses() {
+            const availContainer = document.getElementById('available-sections-container');
+            if (!currentApproved || currentApproved.length === 0) {
+                availContainer.innerHTML = `
+                    <div style="text-align: center; padding: 36px; color: #64748b;">
+                        <div style="font-size:2.5rem; margin-bottom:12px;">📝</div>
+                        <h4 style="color:#0f172a; margin-bottom:8px;">No Approved Pre-Advising Courses</h4>
+                        <p style="margin-bottom: 16px;">You must submit your pre-advising course requests and receive faculty advisor approval before selecting class sections.</p>
+                        <a href="/student/pre_advising.html" class="btn btn-primary btn-sm">Submit Course Pre-Advising</a>
+                    </div>
+                `;
+                return;
+            }
+
+            availContainer.innerHTML = currentApproved.map(course => {
+                // Check if student already enrolled in this course
+                const enrolledSectionForCourse = currentEnrolled.find(e => e.course_id === course.course_id);
+                const isCourseAlreadyEnrolled = !!enrolledSectionForCourse;
+
+                const sectionsHtml = (course.sections || []).map(sec => {
+                    const seatsLeft = Math.max(0, parseInt(sec.capacity, 10) - parseInt(sec.enrolled_count, 10));
+                    const isFull = seatsLeft === 0;
+
+                    // 1. Is this exact section enrolled?
+                    const isThisSecEnrolled = isCourseAlreadyEnrolled && String(enrolledSectionForCourse.section_no) === String(sec.section_no);
+
+                    // 2. Check time clash with ANY of student's enrolled sections
+                    let clashWith = null;
+                    if (!isThisSecEnrolled) {
+                        for (const enrolledSec of currentEnrolled) {
+                            if (App.slotsOverlap(sec.time_slot, enrolledSec.time_slot)) {
+                                clashWith = enrolledSec;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Determine Card State
+                    let cardClass = 'status-available';
+                    let actionButtonHtml = '';
+                    let alertHtml = '';
+
+                    if (isThisSecEnrolled) {
+                        cardClass = 'status-enrolled';
+                        actionButtonHtml = `
+                            <button disabled class="btn btn-sm" style="width:100%; background:#dcfce7; color:#166534; border:1px solid #86efac; cursor:default; font-weight:700;">
+                                ✓ Enrolled in This Section
+                            </button>
+                        `;
+                    } else if (isCourseAlreadyEnrolled) {
+                        cardClass = 'status-full';
+                        actionButtonHtml = `
+                            <button disabled class="btn btn-sm" style="width:100%; background:#f1f5f9; color:#94a3b8; border:1px solid #cbd5e1; cursor:not-allowed;">
+                                Enrolled in Sec ${enrolledSectionForCourse.section_no}
+                            </button>
+                        `;
+                    } else if (clashWith) {
+                        cardClass = 'status-clash';
+                        alertHtml = `
+                            <div class="clash-badge-alert">
+                                <span>⚠️</span>
+                                <div>
+                                    <strong>TIME CLASH:</strong> Clashes with ${App.escape(clashWith.course_id)} (Sec ${clashWith.section_no}: ${App.escape(clashWith.time_slot)})
+                                </div>
+                            </div>
+                        `;
+                        actionButtonHtml = `
+                            <button onclick="showClashDetails('${App.escape(course.course_id)}', '${sec.section_no}', '${App.escape(sec.time_slot)}', '${App.escape(clashWith.course_id)}', '${clashWith.section_no}', '${App.escape(clashWith.time_slot)}')" class="btn btn-sm" style="width:100%; background:#fee2e2; color:#991b1b; border:1px solid #f87171; cursor:pointer; font-weight:700;">
+                                🚫 Not Acceptable (Time Clash)
+                            </button>
+                        `;
+                    } else if (isFull) {
+                        cardClass = 'status-full';
+                        actionButtonHtml = `
+                            <button disabled class="btn btn-sm" style="width:100%; background:#f1f5f9; color:#94a3b8; border:1px solid #cbd5e1; cursor:not-allowed;">
+                                🚫 Full Capacity (0 seats)
+                            </button>
+                        `;
+                    } else {
+                        // Available to enroll by clicking
+                        actionButtonHtml = `
+                            <button onclick="takeSection('${sec.section_id}', '${App.escape(course.course_id)}', '${sec.section_no}', '${App.escape(sec.time_slot)}')" class="btn btn-primary btn-sm" style="width:100%; font-weight:700; padding:10px;">
+                                👉 Click to Take Section ${sec.section_no}
+                            </button>
+                        `;
+                    }
+
+                    return `
+                        <div class="section-box ${cardClass}"
+                             onmouseenter="previewSlotOnTimetable('${sec.time_slot}', ${!!clashWith})"
+                             onmouseleave="clearTimetablePreview()">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <span class="badge ${isThisSecEnrolled ? 'badge-success' : 'badge-info'}" style="font-size:0.8rem; font-weight:800;">
+                                        Section ${sec.section_no}
+                                    </span>
+                                    <span style="font-size:0.75rem; font-weight:700; color:${isFull ? '#ef4444' : (seatsLeft <= 5 ? '#d97706' : '#16a34a')};">
+                                        ${seatsLeft} / ${sec.capacity} seats left
+                                    </span>
+                                </div>
+
+                                <div style="margin-bottom:10px;">
+                                    <div style="font-size:0.95rem; font-weight:800; color:#0f2b48; display:flex; align-items:center; gap:6px;">
+                                        ⏱️ <span>${App.escape(sec.time_slot)}</span>
+                                    </div>
+                                    <div style="font-size:0.8rem; color:#475569; margin-top:4px;">
+                                        📍 Room: <code>${App.escape(sec.room_no)}</code>
+                                    </div>
+                                    <div style="font-size:0.8rem; color:#475569; margin-top:2px;">
+                                        👤 Instructor: <strong>${App.escape(sec.faculty_name || 'TBA')}</strong>
+                                    </div>
+                                </div>
+
+                                ${alertHtml}
+                            </div>
+
+                            <div style="margin-top:12px;">
+                                ${actionButtonHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div style="background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                            <div>
+                                <h4 style="margin:0; font-size:1.15rem; color:#0f2b48; display:flex; align-items:center; gap:8px;">
+                                    <strong>${App.escape(course.course_id)}</strong>: ${App.escape(course.course_title)}
+                                    <span style="font-size:0.8rem; font-weight:normal; color:#64748b;">(${course.credits} Credits)</span>
+                                </h4>
+                            </div>
+                            <div>
+                                ${isCourseAlreadyEnrolled ?
+                                    `<span class="badge badge-success" style="font-size:0.8rem;">✓ Registered: Sec ${enrolledSectionForCourse.section_no} (${enrolledSectionForCourse.time_slot})</span>` :
+                                    `<span class="badge badge-warning" style="font-size:0.8rem;">Select 1 Section Below</span>`}
+                            </div>
+                        </div>
+
+                        <div class="sections-card-grid">
+                            ${sectionsHtml.length > 0 ? sectionsHtml : '<div style="color:#94a3b8; padding:12px;">No sections scheduled for this course yet.</div>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function takeSection(sectionId, courseId, secNo, timeSlot) {
+            // Confirm with student
+            const confirmMsg = `Enroll in ${courseId} (Section ${secNo})?\nTime Slot: ${timeSlot}\n\nOur system will verify zero schedule collisions.`;
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const res = await App.post('/student/advising-take', { section_id: sectionId });
+                App.showAlert(res.message || 'Successfully enrolled in course section!', 'success');
+                await loadAdvising();
+            } catch (err) {
+                App.showAlert(err.message || 'Failed to enroll section.', 'danger');
+            }
+        }
+
+        async function dropSection(enrollmentId, courseId, secNo) {
+            if (!confirm(`Are you sure you want to DROP ${courseId} (Section ${secNo}) from your Summer 2026 registration?`)) return;
+
+            try {
+                const res = await App.post('/student/advising-drop', { enrollment_id: enrollmentId });
+                App.showAlert(res.message || 'Section dropped successfully.', 'success');
+                await loadAdvising();
+            } catch (err) {
+                App.showAlert(err.message || 'Failed to drop section.', 'danger');
+            }
+        }
+
+        function showClashDetails(targetCourse, targetSec, targetSlot, clashCourse, clashSec, clashSlot) {
+            document.getElementById('modal-clash-target').innerText = `Attempted Section: ${targetCourse} (Sec ${targetSec}) at ${targetSlot}`;
+            document.getElementById('modal-clash-reason').innerHTML = `
+                Conflicts with your registered course: <strong>${clashCourse} (Section ${clashSec})</strong> scheduled at <strong>${clashSlot}</strong>.<br><br>
+                Both sections occupy overlapping time intervals on the same day(s). Under East West University academic policy, clashing time slots are <strong>strictly not acceptable</strong>.
+            `;
+            document.getElementById('clash-modal').classList.add('active');
+        }
+
+        function closeClashModal() {
+            document.getElementById('clash-modal').classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAdvising);
+    </script>
+</body>
+</html>

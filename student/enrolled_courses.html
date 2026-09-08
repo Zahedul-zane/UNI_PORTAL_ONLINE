@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrolled Courses & Grades - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Enrolled Courses & Academic Transcript</h1>
+                        <p class="page-subtitle">View all registered courses, exam marks, letter grades, and semester GPA.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title">Academic Record</h3>
+                        <span id="cgpa-badge" class="badge badge-success" style="font-size:0.9rem; padding:6px 12px;">CGPA: 0.00</span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Semester</th>
+                                    <th>Course Code</th>
+                                    <th>Course Title</th>
+                                    <th>Credits</th>
+                                    <th>Section</th>
+                                    <th>Instructor</th>
+                                    <th>Mid (30%)</th>
+                                    <th>Final (60%)</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transcript-body">
+                                <tr><td colspan="9" style="text-align: center; color: #94a3b8; padding: 20px;">Loading courses...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadEnrolledCourses() {
+            const authOk = await App.requireAuth('student');
+            if (!authOk) return;
+
+            // Load student dashboard stats for CGPA
+            const dash = await App.get('/student/dashboard');
+            document.getElementById('cgpa-badge').innerText = `CGPA: ${dash.cgpa ? dash.cgpa.toFixed(2) : '0.00'}`;
+
+            // Load courses
+            const data = await App.get('/student/enrolled-courses');
+            const tbody = document.getElementById('transcript-body');
+            const courses = data.courses || [];
+
+            if (courses.length > 0) {
+                tbody.innerHTML = courses.map(c => `
+                    <tr>
+                        <td><strong>${App.escape(c.semester)} ${c.year}</strong></td>
+                        <td><strong>${App.escape(c.course_id)}</strong></td>
+                        <td>${App.escape(c.course_title)}</td>
+                        <td>${c.credits || 3.0}</td>
+                        <td><span class="badge badge-blue">Sec ${c.section_no}</span></td>
+                        <td>${App.escape(c.faculty_name || 'TBA')}</td>
+                        <td>${c.mid_mark ? c.mid_mark : '<span style="color:#94a3b8;">-</span>'}</td>
+                        <td>${c.final_mark ? c.final_mark : '<span style="color:#94a3b8;">-</span>'}</td>
+                        <td>
+                            <span class="badge badge-${c.grade === 'A+' || c.grade === 'A' || c.grade === 'A-' ? 'success' : (c.grade === 'F' ? 'danger' : 'blue')}">
+                                ${App.escape(c.grade || 'N/A')}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #94a3b8; padding: 20px;">No course records found.</td></tr>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadEnrolledCourses);
+    </script>
+</body>
+</html>

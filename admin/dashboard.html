@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">University Administration Dashboard</h1>
+                        <p class="page-subtitle">Node.js Backend • Excel Persistent Database • Real-time Monitoring</p>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <a href="/admin/excel_manager.html" class="btn btn-primary">Open Excel Database Manager</a>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 28px;">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#eff6ff; color:#2563eb;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Total Students</div>
+                            <div class="stat-value" id="stat-students">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fdf2f8; color:#db2777;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Faculty Members</div>
+                            <div class="stat-value" id="stat-faculty">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#f5f3ff; color:#7c3aed;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Departments</div>
+                            <div class="stat-value" id="stat-depts">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#ecfdf5; color:#059669;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Offered Courses</div>
+                            <div class="stat-value" id="stat-courses">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fffbeb; color:#d97706;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Class Sections</div>
+                            <div class="stat-value" id="stat-sections">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#f0fdf4; color:#16a34a;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Tuition Revenue</div>
+                            <div class="stat-value" id="stat-revenue">৳0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Management Links -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                    <div class="card" style="padding:20px;">
+                        <h3 style="font-size:1.1rem; color:#0f172a; margin-bottom:8px;">👥 Academic Personnel</h3>
+                        <p style="font-size:0.875rem; color:#64748b; margin-bottom:16px;">Manage faculty profiles, student admissions, and advisor assignment.</p>
+                        <div style="display:flex; gap:10px;">
+                            <a href="/admin/students.html" class="btn btn-outline btn-sm">Students Directory</a>
+                            <a href="/admin/faculty.html" class="btn btn-outline btn-sm">Faculty Members</a>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:20px;">
+                        <h3 style="font-size:1.1rem; color:#0f172a; margin-bottom:8px;">📚 Curricula & Timetable</h3>
+                        <p style="font-size:0.875rem; color:#64748b; margin-bottom:16px;">Configure courses, prerequisites, and schedule clash-free class sections.</p>
+                        <div style="display:flex; gap:10px;">
+                            <a href="/admin/courses.html" class="btn btn-outline btn-sm">Course Catalog</a>
+                            <a href="/admin/sections.html" class="btn btn-outline btn-sm">Class Sections</a>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:20px;">
+                        <h3 style="font-size:1.1rem; color:#0f172a; margin-bottom:8px;">📊 Excel Database & Ledger</h3>
+                        <p style="font-size:0.875rem; color:#64748b; margin-bottom:16px;">Direct spreadsheet downloads, CSV table uploads, and payment ledger.</p>
+                        <div style="display:flex; gap:10px;">
+                            <a href="/admin/excel_manager.html" class="btn btn-primary btn-sm">Excel Manager</a>
+                            <a href="/admin/payments.html" class="btn btn-outline btn-sm">Payments Ledger</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadAdminDashboard() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            const data = await App.get('/admin/dashboard');
+            document.getElementById('stat-students').innerText = data.total_students || 0;
+            document.getElementById('stat-faculty').innerText = data.total_faculty || 0;
+            document.getElementById('stat-depts').innerText = data.total_depts || 0;
+            document.getElementById('stat-courses').innerText = data.total_courses || 0;
+            document.getElementById('stat-sections').innerText = data.total_sections || 0;
+            document.getElementById('stat-revenue').innerText = '৳' + Number(data.total_revenue || 0).toLocaleString();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAdminDashboard);
+    </script>
+</body>
+</html>

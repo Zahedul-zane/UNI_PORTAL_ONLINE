@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments Ledger - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Tuition & Accounts Ledger</h1>
+                        <p class="page-subtitle">Track student tuition fee payments, verify pending transactions, and accounts ledger.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Payments Table -->
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title">All Student Payment Records</h3>
+                        <span id="revenue-badge" class="badge badge-success" style="font-size:0.9rem; padding:6px 12px;">Total Collected: ৳0</span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Txn ID</th>
+                                    <th>Student Name & ID</th>
+                                    <th>Semester</th>
+                                    <th>Amount</th>
+                                    <th>Payment Date</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-payments-body">
+                                <tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">Loading payments...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadAdminPayments() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            const data = await App.get('/admin/payments');
+            const tbody = document.getElementById('admin-payments-body');
+            const payments = data.payments || [];
+
+            let totalRev = 0;
+            if (payments.length > 0) {
+                tbody.innerHTML = payments.map(p => {
+                    const amt = parseFloat(p.amount) || 0;
+                    if (p.status === 'Paid') totalRev += amt;
+
+                    return `
+                        <tr>
+                            <td><code>${App.escape(p.transaction_id)}</code></td>
+                            <td>
+                                <strong>${App.escape(p.student_name || 'N/A')}</strong>
+                                <div style="font-size:0.75rem; color:#64748b;">${App.escape(p.student_id)}</div>
+                            </td>
+                            <td>${App.escape(p.semester)} ${p.year}</td>
+                            <td><strong>৳${amt.toLocaleString()}</strong></td>
+                            <td>${p.payment_date ? App.escape(p.payment_date) : '<span style="color:#94a3b8;">Pending</span>'}</td>
+                            <td>
+                                <span class="badge badge-${p.status === 'Paid' ? 'success' : 'warning'}">
+                                    ${App.escape(p.status)}
+                                </span>
+                            </td>
+                            <td style="text-align:right;">
+                                ${p.status === 'Pending' ? `
+                                    <button onclick="markAsPaid('${p.payment_id}')" class="btn btn-primary btn-sm">
+                                        Mark as Paid
+                                    </button>
+                                ` : '<span style="color:#10b981; font-size:0.85rem; font-weight:600;">Verified ✓</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No payment records found.</td></tr>`;
+            }
+
+            document.getElementById('revenue-badge').innerText = `Total Collected: ৳${totalRev.toLocaleString()}`;
+        }
+
+        async function markAsPaid(payId) {
+            try {
+                const res = await App.post('/admin/payments-action', { payment_id: payId, status: 'Paid' });
+                App.showAlert(res.message, 'success');
+                loadAdminPayments();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAdminPayments);
+    </script>
+</body>
+</html>

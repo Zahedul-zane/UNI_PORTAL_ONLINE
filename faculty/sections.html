@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigned Sections & Student Roster - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Assigned Sections & Class Rosters</h1>
+                        <p class="page-subtitle">View enrolled students and class details for all assigned teaching sections.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Sections list -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">My Teaching Sections (Summer 2026)</h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Title</th>
+                                    <th>Section</th>
+                                    <th>Time Slot</th>
+                                    <th>Room</th>
+                                    <th>Capacity</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sections-list-body">
+                                <tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">Loading sections...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section Student Roster (collapsible/dynamic) -->
+                <div class="card" id="roster-card" style="display:none;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title" id="roster-title">Class Roster</h3>
+                        <span id="roster-count" class="badge badge-blue">0 Students</span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Mid Mark</th>
+                                    <th>Final Mark</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roster-body">
+                                <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">No students enrolled.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadSections() {
+            const authOk = await App.requireAuth('faculty');
+            if (!authOk) return;
+
+            const data = await App.get('/faculty/sections');
+            const tbody = document.getElementById('sections-list-body');
+            const sections = data.sections || [];
+
+            if (sections.length > 0) {
+                tbody.innerHTML = sections.map(s => `
+                    <tr>
+                        <td><strong>${App.escape(s.course_id)}</strong></td>
+                        <td>${App.escape(s.course_title)}</td>
+                        <td><span class="badge badge-blue">Sec ${s.section_no}</span></td>
+                        <td><strong>${App.escape(s.time_slot)}</strong></td>
+                        <td><code>${App.escape(s.room_no)}</code></td>
+                        <td>${s.capacity}</td>
+                        <td style="text-align:right;">
+                            <button onclick="viewRoster('${s.section_id}', '${App.escape(s.course_id)}', '${s.section_no}')" class="btn btn-primary btn-sm">
+                                View Roster
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Check URL params for auto-opening a section
+                const urlParams = new URLSearchParams(window.location.search);
+                const secIdParam = urlParams.get('section_id');
+                if (secIdParam) {
+                    const match = sections.find(x => x.section_id == secIdParam);
+                    if (match) {
+                        viewRoster(match.section_id, match.course_id, match.section_no);
+                    }
+                }
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No sections assigned.</td></tr>`;
+            }
+        }
+
+        async function viewRoster(sectionId, courseId, sectionNo) {
+            const rosterCard = document.getElementById('roster-card');
+            const rosterTitle = document.getElementById('roster-title');
+            const rosterCount = document.getElementById('roster-count');
+            const rosterBody = document.getElementById('roster-body');
+
+            rosterTitle.innerText = `Class Roster: ${courseId} (Section ${sectionNo})`;
+            rosterCard.style.display = 'block';
+            rosterBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">Loading student list...</td></tr>`;
+
+            try {
+                const data = await App.get(`/faculty/sections?section_id=${sectionId}`);
+                const roster = data.roster || [];
+                rosterCount.innerText = `${roster.length} Students`;
+
+                if (roster.length > 0) {
+                    rosterBody.innerHTML = roster.map(r => `
+                        <tr>
+                            <td><strong>${App.escape(r.student_id)}</strong></td>
+                            <td>${App.escape(r.student_name || 'N/A')}</td>
+                            <td>${App.escape(r.email || 'N/A')}</td>
+                            <td>${r.mid_mark || '-'}</td>
+                            <td>${r.final_mark || '-'}</td>
+                            <td><span class="badge badge-${r.grade === 'A+' || r.grade === 'A' ? 'success' : (r.grade === 'F' ? 'danger' : 'blue')}">${App.escape(r.grade || 'N/A')}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    rosterBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">No students currently enrolled in this section.</td></tr>`;
+                }
+
+                rosterCard.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSections);
+    </script>
+</body>
+</html>

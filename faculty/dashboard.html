@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Faculty Portal Dashboard</h1>
+                        <p class="page-subtitle">Welcome back, <span id="faculty-name-header">Professor</span>. Summer 2026 Academic Term.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#eff6ff; color:#2563eb;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Assigned Sections</div>
+                            <div class="stat-value" id="sec-count">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#ecfdf5; color:#059669;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Total Enrolled Students</div>
+                            <div class="stat-value" id="student-count">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Pending Advising Approvals</div>
+                            <div class="stat-value" id="pending-advisees">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teaching Schedule -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Summer 2026 Teaching Sections & Class Schedule</h3>
+                        <a href="/faculty/grading.html" class="btn btn-primary btn-sm">Open Gradebook</a>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Title</th>
+                                    <th>Section</th>
+                                    <th>Time Slot</th>
+                                    <th>Room</th>
+                                    <th>Enrolled Students</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="faculty-sections-body">
+                                <tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">Loading assigned sections...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadFacultyDashboard() {
+            const authOk = await App.requireAuth('faculty');
+            if (!authOk) return;
+
+            document.getElementById('faculty-name-header').innerText = App.user.name;
+
+            const data = await App.get('/faculty/dashboard');
+            document.getElementById('sec-count').innerText = (data.sections || []).length;
+            document.getElementById('student-count').innerText = data.total_students || 0;
+            document.getElementById('pending-advisees').innerText = data.pending_approvals || 0;
+
+            const tbody = document.getElementById('faculty-sections-body');
+            const sections = data.sections || [];
+
+            if (sections.length > 0) {
+                tbody.innerHTML = sections.map(s => `
+                    <tr>
+                        <td><strong>${App.escape(s.course_id)}</strong></td>
+                        <td>${App.escape(s.course_title)}</td>
+                        <td><span class="badge badge-blue">Section ${s.section_no}</span></td>
+                        <td><strong style="color:#1e293b;">${App.escape(s.time_slot)}</strong></td>
+                        <td><code>${App.escape(s.room_no)}</code></td>
+                        <td><span class="badge badge-success">${s.enrolled_count} Students</span></td>
+                        <td style="text-align:right;">
+                            <a href="/faculty/sections.html?section_id=${s.section_id}" class="btn btn-outline btn-sm">View Roster</a>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No sections currently assigned for Summer 2026.</td></tr>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadFacultyDashboard);
+    </script>
+</body>
+</html>

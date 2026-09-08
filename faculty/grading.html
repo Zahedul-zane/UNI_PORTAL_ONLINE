@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradebook Management - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Gradebook & Examination Marks</h1>
+                        <p class="page-subtitle">Input Midterm and Final exam marks with automated letter grade calculation.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Section Picker -->
+                <div class="card" style="padding: 20px; margin-bottom: 24px;">
+                    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                        <label style="font-weight:700; color:#0f172a; margin:0;">Select Course Section to Grade:</label>
+                        <select id="section-select" class="form-control" style="max-width:350px;" onchange="onSectionChange()">
+                            <option value="">-- Choose Section --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Gradebook Table -->
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title" id="gradebook-title">Section Gradebook</h3>
+                        <span style="font-size:0.8rem; color:#64748b;">Grading Scale: 80%+=A+, 75%=A, 70%=A-, 65%=B+, 60%=B, 50%=C+, 40%=D, &lt;40%=F</span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th style="width:140px;">Mid Mark (30%)</th>
+                                    <th style="width:140px;">Final Mark (70%)</th>
+                                    <th>Calculated Grade</th>
+                                    <th style="text-align:right;">Save Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradebook-body">
+                                <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 30px;">Please select a section above to load students.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        let currentSections = [];
+
+        async function loadGrading() {
+            const authOk = await App.requireAuth('faculty');
+            if (!authOk) return;
+
+            const data = await App.get('/faculty/sections');
+            currentSections = data.sections || [];
+
+            const select = document.getElementById('section-select');
+            select.innerHTML = `<option value="">-- Choose Section --</option>` + currentSections.map(s => `
+                <option value="${s.section_id}">${s.course_id} - ${s.course_title} (Sec ${s.section_no})</option>
+            `).join('');
+
+            if (currentSections.length > 0) {
+                select.value = currentSections[0].section_id;
+                onSectionChange();
+            }
+        }
+
+        async function onSectionChange() {
+            const secId = document.getElementById('section-select').value;
+            const tbody = document.getElementById('gradebook-body');
+            const title = document.getElementById('gradebook-title');
+
+            if (!secId) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 30px;">Please select a section above.</td></tr>`;
+                return;
+            }
+
+            const sec = currentSections.find(s => s.section_id == secId);
+            if (sec) {
+                title.innerText = `Gradebook: ${sec.course_id} - ${sec.course_title} (Sec ${sec.section_no})`;
+            }
+
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 30px;">Loading student grades...</td></tr>`;
+
+            try {
+                const data = await App.get(`/faculty/sections?section_id=${secId}`);
+                const roster = data.roster || [];
+
+                if (roster.length > 0) {
+                    tbody.innerHTML = roster.map(r => `
+                        <tr id="row-${r.enrollment_id}">
+                            <td><strong>${App.escape(r.student_id)}</strong></td>
+                            <td>${App.escape(r.student_name || 'N/A')}</td>
+                            <td>
+                                <input type="number" step="0.5" min="0" max="30" id="mid-${r.enrollment_id}" value="${r.mid_mark || ''}" class="form-control form-control-sm" placeholder="Mid" oninput="calcGrade('${r.enrollment_id}')">
+                            </td>
+                            <td>
+                                <input type="number" step="0.5" min="0" max="70" id="final-${r.enrollment_id}" value="${r.final_mark || ''}" class="form-control form-control-sm" placeholder="Final" oninput="calcGrade('${r.enrollment_id}')">
+                            </td>
+                            <td>
+                                <span id="badge-${r.enrollment_id}" class="badge badge-${r.grade === 'A+' || r.grade === 'A' ? 'success' : (r.grade === 'F' ? 'danger' : 'blue')}">
+                                    ${App.escape(r.grade || 'N/A')}
+                                </span>
+                            </td>
+                            <td style="text-align:right;">
+                                <button onclick="saveGrade('${r.enrollment_id}')" class="btn btn-primary btn-sm" id="btn-${r.enrollment_id}">
+                                    Save Grade
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 30px;">No students enrolled in this section.</td></tr>`;
+                }
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        function computeLetterGrade(mid, fin) {
+            const total = (parseFloat(mid) || 0) + (parseFloat(fin) || 0);
+            if (total >= 80) return 'A+';
+            if (total >= 75) return 'A';
+            if (total >= 70) return 'A-';
+            if (total >= 65) return 'B+';
+            if (total >= 60) return 'B';
+            if (total >= 55) return 'B-';
+            if (total >= 50) return 'C+';
+            if (total >= 45) return 'C';
+            if (total >= 40) return 'D';
+            return 'F';
+        }
+
+        function calcGrade(enrollmentId) {
+            const mid = document.getElementById(`mid-${enrollmentId}`).value;
+            const fin = document.getElementById(`final-${enrollmentId}`).value;
+            const grade = computeLetterGrade(mid, fin);
+            const badge = document.getElementById(`badge-${enrollmentId}`);
+            badge.innerText = grade;
+            badge.className = `badge badge-${grade === 'A+' || grade === 'A' ? 'success' : (grade === 'F' ? 'danger' : 'blue')}`;
+        }
+
+        async function saveGrade(enrollmentId) {
+            const btn = document.getElementById(`btn-${enrollmentId}`);
+            btn.disabled = true;
+            btn.innerText = 'Saving...';
+
+            const mid_mark = parseFloat(document.getElementById(`mid-${enrollmentId}`).value) || 0.0;
+            const final_mark = parseFloat(document.getElementById(`final-${enrollmentId}`).value) || 0.0;
+            const grade = computeLetterGrade(mid_mark, final_mark);
+
+            try {
+                const res = await App.post('/faculty/grading', {
+                    enrollment_id: enrollmentId,
+                    mid_mark,
+                    final_mark,
+                    grade
+                });
+                App.showAlert(res.message, 'success');
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Save Grade';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadGrading);
+    </script>
+</body>
+</html>

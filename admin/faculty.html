@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Members Directory - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Faculty Members Directory</h1>
+                        <p class="page-subtitle">Register new professors, lecturers, and configure department affiliations.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <!-- Add Faculty Form -->
+                    <div class="card" style="padding: 24px; height: fit-content;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">👨‍🏫 Add New Faculty</h3>
+                        <form id="faculty-form" onsubmit="saveFaculty(event)">
+                            <div class="form-group">
+                                <label for="fac-id">Faculty ID</label>
+                                <input type="text" id="fac-id" class="form-control" placeholder="e.g. 1652688919" required>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label for="fac-fname">First Name</label>
+                                    <input type="text" id="fac-fname" class="form-control" placeholder="Dr. John" required>
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label for="fac-lname">Last Name</label>
+                                    <input type="text" id="fac-lname" class="form-control" placeholder="Doe" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-desig">Designation</label>
+                                <input type="text" id="fac-desig" class="form-control" placeholder="Assistant Professor">
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-email">Email</label>
+                                <input type="email" id="fac-email" class="form-control" placeholder="john.doe@ewubd.edu" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-dept">Department</label>
+                                <select id="fac-dept" class="form-control" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-room">Office Room</label>
+                                <input type="text" id="fac-room" class="form-control" placeholder="e.g. AB1-502">
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-phone">Phone Number</label>
+                                <input type="text" id="fac-phone" class="form-control" placeholder="+8801...">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-fac-btn" style="width: 100%;">
+                                Register Faculty Member
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Faculty Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Faculty List</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Faculty ID</th>
+                                        <th>Name</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Office</th>
+                                        <th>Contact</th>
+                                        <th style="text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="faculty-table-body">
+                                    <tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">Loading faculty...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadFacultyList() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            // Load departments for select dropdown
+            const deptData = await App.get('/admin/departments');
+            const depts = deptData.departments || [];
+            document.getElementById('fac-dept').innerHTML = depts.map(d => `
+                <option value="${d.dept_id}">${d.dept_name} (${d.dept_id})</option>
+            `).join('');
+
+            // Load faculty list
+            const data = await App.get('/admin/faculty');
+            const tbody = document.getElementById('faculty-table-body');
+            const list = data.faculty || [];
+
+            if (list.length > 0) {
+                tbody.innerHTML = list.map(f => `
+                    <tr>
+                        <td><code>${App.escape(f.faculty_id)}</code></td>
+                        <td><strong>${App.escape(f.first_name)} ${App.escape(f.last_name)}</strong></td>
+                        <td>${App.escape(f.designation || 'Faculty')}</td>
+                        <td>${App.escape(f.dept_name || 'N/A')}</td>
+                        <td><code>${App.escape(f.room_no || 'TBA')}</code></td>
+                        <td>
+                            <div style="font-size:0.85rem;">${App.escape(f.email || '')}</div>
+                            <div style="font-size:0.75rem; color:#64748b;">${App.escape(f.phone1 || '')}</div>
+                        </td>
+                        <td style="text-align:right;">
+                            <button onclick="deleteFaculty('${f.faculty_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No faculty members registered.</td></tr>`;
+            }
+        }
+
+        async function saveFaculty(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-fac-btn');
+            btn.disabled = true;
+
+            const faculty_id = document.getElementById('fac-id').value.trim();
+            const first_name = document.getElementById('fac-fname').value.trim();
+            const last_name = document.getElementById('fac-lname').value.trim();
+            const designation = document.getElementById('fac-desig').value.trim();
+            const email = document.getElementById('fac-email').value.trim();
+            const dept_id = document.getElementById('fac-dept').value;
+            const room_no = document.getElementById('fac-room').value.trim();
+            const phone1 = document.getElementById('fac-phone').value.trim();
+
+            try {
+                const res = await App.post('/admin/faculty', {
+                    faculty_id, first_name, last_name, designation, email, dept_id, room_no, phone1
+                });
+                App.showAlert(res.message, 'success');
+                document.getElementById('faculty-form').reset();
+                loadFacultyList();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteFaculty(id) {
+            if (!confirm(`Are you sure you want to remove Faculty #${id}?`)) return;
+            try {
+                await App.delete('/admin/faculty', { faculty_id: id });
+                App.showAlert('Faculty member removed.', 'success');
+                loadFacultyList();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadFacultyList);
+    </script>
+</body>
+</html>

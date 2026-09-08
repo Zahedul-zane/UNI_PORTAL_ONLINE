@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Advisees & Approvals - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Advisees Pre-Advising Approval</h1>
+                        <p class="page-subtitle">Review prospective course requests submitted by your assigned student advisees.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Advisees Container -->
+                <div id="advisees-container">
+                    <p style="color:#94a3b8;">Loading advisees list...</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadAdvisees() {
+            const authOk = await App.requireAuth('faculty');
+            if (!authOk) return;
+
+            const data = await App.get('/faculty/advisees');
+            const container = document.getElementById('advisees-container');
+            const advisees = data.advisees || [];
+
+            if (advisees.length > 0) {
+                container.innerHTML = advisees.map(adv => `
+                    <div class="card" style="margin-bottom: 24px; padding: 20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                            <div>
+                                <h3 style="font-size:1.15rem; color:#0f172a; margin:0;">
+                                    ${App.escape(adv.name)} <span style="font-size:0.9rem; color:#64748b; font-family:monospace;">(${App.escape(adv.student_id)})</span>
+                                </h3>
+                                <div style="font-size:0.85rem; color:#475569; margin-top:2px;">
+                                    Dept: ${App.escape(adv.dept_name || 'N/A')} • Email: ${App.escape(adv.email || 'N/A')}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${(adv.pre_advising_forms && adv.pre_advising_forms.length > 0) ? adv.pre_advising_forms.map(form => `
+                            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <strong style="color:#1e293b;">Pre-Advising Form #${form.pre_advising_id} (${App.escape(form.semester)} ${form.year})</strong>
+                                    <div style="display:flex; gap:8px;">
+                                        <button onclick="approveAll('${form.pre_advising_id}')" class="btn btn-primary btn-sm">Approve All</button>
+                                        <button onclick="rejectAll('${form.pre_advising_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Reject All</button>
+                                    </div>
+                                </div>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course Code</th>
+                                            <th>Course Title</th>
+                                            <th>Credits</th>
+                                            <th>Current Status</th>
+                                            <th style="text-align:right;">Single Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${(form.courses || []).map(c => `
+                                            <tr>
+                                                <td><strong>${App.escape(c.course_id)}</strong></td>
+                                                <td>${App.escape(c.course_title || '')}</td>
+                                                <td>${c.credits || 3.0}</td>
+                                                <td>
+                                                    <span class="badge badge-${c.status === 'Approved' ? 'success' : (c.status === 'Rejected' ? 'danger' : 'warning')}">
+                                                        ${App.escape(c.status)}
+                                                    </span>
+                                                </td>
+                                                <td style="text-align:right;">
+                                                    <button onclick="updateCourseStatus('${form.pre_advising_id}', '${c.course_id}', 'Approved')" class="btn btn-outline btn-sm" style="color:#059669; border-color:#a7f3d0; margin-right:4px;">Approve</button>
+                                                    <button onclick="updateCourseStatus('${form.pre_advising_id}', '${c.course_id}', 'Rejected')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Reject</button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `).join('') : '<p style="color:#94a3b8; font-size:0.9rem; margin:0;">No pre-advising forms submitted by this student yet.</p>'}
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `<div class="card" style="padding:30px; text-align:center; color:#94a3b8;">No advisees currently assigned to your profile.</div>`;
+            }
+        }
+
+        async function updateCourseStatus(paId, courseId, status) {
+            try {
+                const res = await App.post('/faculty/advisees-action', {
+                    pre_advising_id: paId,
+                    course_id: courseId,
+                    status: status
+                });
+                App.showAlert(res.message, 'success');
+                loadAdvisees();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        async function approveAll(paId) {
+            try {
+                const res = await App.post('/faculty/advisees-action', {
+                    pre_advising_id: paId,
+                    course_id: '',
+                    status: 'Approved'
+                });
+                App.showAlert(res.message, 'success');
+                loadAdvisees();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        async function rejectAll(paId) {
+            try {
+                const res = await App.post('/faculty/advisees-action', {
+                    pre_advising_id: paId,
+                    course_id: '',
+                    status: 'Rejected'
+                });
+                App.showAlert(res.message, 'success');
+                loadAdvisees();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAdvisees);
+    </script>
+</body>
+</html>

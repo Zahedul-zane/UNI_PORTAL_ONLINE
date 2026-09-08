@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Student Profile</h1>
+                        <p class="page-subtitle">View and update your personal and contact details.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <!-- Personal Info (Readonly) -->
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">🎓 Academic & Personal Info</h3>
+                        <div class="form-group">
+                            <label>Student ID</label>
+                            <input type="text" id="prof-id" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="prof-name" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Institutional Email</label>
+                            <input type="text" id="prof-email" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="prof-dept" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Faculty Advisor</label>
+                            <input type="text" id="prof-advisor" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                    </div>
+
+                    <!-- Editable Contact & Security -->
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">✏️ Update Contact & Password</h3>
+                        <form id="profile-form" onsubmit="saveProfile(event)">
+                            <div class="form-group">
+                                <label for="prof-address">Residential Address</label>
+                                <textarea id="prof-address" class="form-control" rows="2" placeholder="Enter present address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-phone1">Primary Phone</label>
+                                <input type="text" id="prof-phone1" class="form-control" placeholder="+8801...">
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-phone2">Secondary Phone (Optional)</label>
+                                <input type="text" id="prof-phone2" class="form-control" placeholder="+8801...">
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-pass">New Password (leave blank to keep current)</label>
+                                <input type="password" id="prof-pass" class="form-control" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-btn">
+                                Save Profile Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadProfile() {
+            const authOk = await App.requireAuth('student');
+            if (!authOk) return;
+
+            const me = await App.get('/me');
+            document.getElementById('prof-id').value = me.user_id || '';
+            document.getElementById('prof-name').value = (me.first_name || '') + ' ' + (me.last_name || '');
+            document.getElementById('prof-email').value = me.email || '';
+            document.getElementById('prof-dept').value = me.dept_name || 'N/A';
+            document.getElementById('prof-advisor').value = me.advisor_name ? `${me.advisor_name} (${me.advisor_email || ''})` : 'Not assigned';
+            document.getElementById('prof-address').value = me.address || '';
+            document.getElementById('prof-phone1').value = me.phone1 || '';
+            document.getElementById('prof-phone2').value = me.phone2 || '';
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.innerText = 'Saving...';
+
+            const address = document.getElementById('prof-address').value.trim();
+            const phone1 = document.getElementById('prof-phone1').value.trim();
+            const phone2 = document.getElementById('prof-phone2').value.trim();
+            const new_password = document.getElementById('prof-pass').value;
+
+            try {
+                const res = await App.post('/student/profile', { address, phone1, phone2, new_password });
+                App.showAlert('Profile updated successfully!', 'success');
+                document.getElementById('prof-pass').value = '';
+            } catch (err) {
+                App.showAlert(err.message || 'Failed to update profile.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Save Profile Changes';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

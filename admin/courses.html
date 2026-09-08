@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses & Prerequisites - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Course Catalog & Prerequisite Chains</h1>
+                        <p class="page-subtitle">Add university courses, set credit weights, and manage course prerequisite rules.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <!-- Add Course & Prereq Forms -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        <!-- Add Course -->
+                        <div class="card" style="padding: 24px;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">📚 Add New Course</h3>
+                            <form id="course-form" onsubmit="saveCourse(event)">
+                                <div class="form-group">
+                                    <label for="c-id">Course Code</label>
+                                    <input type="text" id="c-id" class="form-control" placeholder="e.g. CSE381" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="c-title">Course Title</label>
+                                    <input type="text" id="c-title" class="form-control" placeholder="Web Programming" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="c-credits">Credit Hours</label>
+                                    <input type="number" step="0.5" id="c-credits" class="form-control" value="3.0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="c-dept">Department</label>
+                                    <select id="c-dept" class="form-control" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="save-course-btn" style="width: 100%;">
+                                    Create Course
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Link Prerequisite -->
+                        <div class="card" style="padding: 24px;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">🔗 Link Prerequisite</h3>
+                            <form id="prereq-form" onsubmit="savePrereq(event)">
+                                <div class="form-group">
+                                    <label for="pr-target">Target Course</label>
+                                    <select id="pr-target" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pr-required">Prerequisite Required Course</label>
+                                    <select id="pr-required" class="form-control" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-outline" style="width: 100%;">
+                                    Attach Prerequisite
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Courses Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Course Catalog</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course Code</th>
+                                        <th>Course Title</th>
+                                        <th>Credits</th>
+                                        <th>Department</th>
+                                        <th>Prerequisites</th>
+                                        <th style="text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courses-table-body">
+                                    <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">Loading courses...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadCourses() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            // Load departments
+            const deptData = await App.get('/admin/departments');
+            const depts = deptData.departments || [];
+            document.getElementById('c-dept').innerHTML = depts.map(d => `
+                <option value="${d.dept_id}">${d.dept_name} (${d.dept_id})</option>
+            `).join('');
+
+            // Load courses
+            const data = await App.get('/admin/courses');
+            const courses = data.courses || [];
+
+            // Populate prereq dropdowns
+            const courseOpts = courses.map(c => `<option value="${c.course_id}">${c.course_id} - ${c.course_title}</option>`).join('');
+            document.getElementById('pr-target').innerHTML = `<option value="">-- Choose Course --</option>` + courseOpts;
+            document.getElementById('pr-required').innerHTML = `<option value="">-- Choose Prereq --</option>` + courseOpts;
+
+            const tbody = document.getElementById('courses-table-body');
+            if (courses.length > 0) {
+                tbody.innerHTML = courses.map(c => `
+                    <tr>
+                        <td><strong>${App.escape(c.course_id)}</strong></td>
+                        <td>${App.escape(c.course_title)}</td>
+                        <td><span class="badge badge-blue">${c.credits} Cr</span></td>
+                        <td>${App.escape(c.dept_name || 'N/A')}</td>
+                        <td>
+                            ${(c.prerequisites && c.prerequisites.length > 0) ? c.prerequisites.map(p => `
+                                <span class="badge badge-warning" style="margin-right:4px;">
+                                    ${App.escape(p)}
+                                    <span onclick="deletePrereq('${c.course_id}', '${p}')" style="cursor:pointer; margin-left:4px; font-weight:bold;">&times;</span>
+                                </span>
+                            `).join('') : '<span style="color:#94a3b8; font-size:0.8rem;">None</span>'}
+                        </td>
+                        <td style="text-align:right;">
+                            <button onclick="deleteCourse('${c.course_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">No courses found.</td></tr>`;
+            }
+        }
+
+        async function saveCourse(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-course-btn');
+            btn.disabled = true;
+
+            const course_id = document.getElementById('c-id').value.trim();
+            const course_title = document.getElementById('c-title').value.trim();
+            const credits = parseFloat(document.getElementById('c-credits').value);
+            const dept_id = document.getElementById('c-dept').value;
+
+            try {
+                const res = await App.post('/admin/courses', { course_id, course_title, credits, dept_id });
+                App.showAlert(res.message, 'success');
+                document.getElementById('course-form').reset();
+                loadCourses();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function savePrereq(e) {
+            e.preventDefault();
+            const course_id = document.getElementById('pr-target').value;
+            const pre_course_id = document.getElementById('pr-required').value;
+
+            if (course_id === pre_course_id) {
+                App.showAlert('A course cannot be a prerequisite of itself.', 'danger');
+                return;
+            }
+
+            try {
+                const res = await App.post('/admin/prerequisites', { course_id, pre_course_id });
+                App.showAlert(res.message, 'success');
+                loadCourses();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        async function deletePrereq(course_id, pre_course_id) {
+            try {
+                await App.delete('/admin/prerequisites', { course_id, pre_course_id });
+                App.showAlert('Prerequisite unlinked.', 'success');
+                loadCourses();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        async function deleteCourse(course_id) {
+            if (!confirm(`Are you sure you want to delete Course ${course_id}?`)) return;
+            try {
+                await App.delete('/admin/courses', { course_id });
+                App.showAlert('Course deleted.', 'success');
+                loadCourses();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCourses);
+    </script>
+</body>
+</html>

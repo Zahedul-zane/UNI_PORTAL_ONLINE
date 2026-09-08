@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Enrollments - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Master Enrollments Directory</h1>
+                        <p class="page-subtitle">Administrative enrollment overview, student registrations, and manual course assignment.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <!-- Manual Enroll Form -->
+                    <div class="card" style="padding: 24px; height: fit-content;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">✍️ Manual Enrollment</h3>
+                        <form id="enroll-form" onsubmit="saveEnrollment(event)">
+                            <div class="form-group">
+                                <label for="enr-student">Student</label>
+                                <select id="enr-student" class="form-control" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="enr-sec">Course Section</label>
+                                <select id="enr-sec" class="form-control" required></select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-enr-btn" style="width: 100%;">
+                                Enroll Student in Section
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Enrollments Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Enrollment Records</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Enr ID</th>
+                                        <th>Student ID & Name</th>
+                                        <th>Course & Sec</th>
+                                        <th>Term</th>
+                                        <th>Grade</th>
+                                        <th style="text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enrollments-table-body">
+                                    <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">Loading enrollments...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadEnrollments() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            // Load students
+            const stdData = await App.get('/admin/students');
+            const students = stdData.students || [];
+            document.getElementById('enr-student').innerHTML = students.map(s => `
+                <option value="${s.student_id}">${s.student_id} - ${s.first_name} ${s.last_name}</option>
+            `).join('');
+
+            // Load sections
+            const secData = await App.get('/admin/sections');
+            const sections = secData.sections || [];
+            document.getElementById('enr-sec').innerHTML = sections.map(sec => `
+                <option value="${sec.section_id}">${sec.course_id} (Sec ${sec.section_no}) - ${sec.time_slot}</option>
+            `).join('');
+
+            // Load enrollments
+            const data = await App.get('/admin/enrollments');
+            const tbody = document.getElementById('enrollments-table-body');
+            const list = data.enrollments || [];
+
+            if (list.length > 0) {
+                tbody.innerHTML = list.map(e => `
+                    <tr>
+                        <td><code>#${e.enrollment_id}</code></td>
+                        <td>
+                            <strong>${App.escape(e.student_name || 'N/A')}</strong>
+                            <div style="font-size:0.75rem; color:#64748b;">${App.escape(e.student_id)}</div>
+                        </td>
+                        <td><strong>${App.escape(e.course_id || '')}</strong> (Sec ${e.section_no || ''})</td>
+                        <td>${App.escape(e.semester)} ${e.year}</td>
+                        <td><span class="badge badge-${e.grade === 'A+' || e.grade === 'A' ? 'success' : (e.grade === 'F' ? 'danger' : 'blue')}">${App.escape(e.grade || 'N/A')}</span></td>
+                        <td style="text-align:right;">
+                            <button onclick="deleteEnrollment('${e.enrollment_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Remove</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">No enrollments recorded.</td></tr>`;
+            }
+        }
+
+        async function saveEnrollment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-enr-btn');
+            btn.disabled = true;
+
+            const student_id = document.getElementById('enr-student').value;
+            const section_id = document.getElementById('enr-sec').value;
+
+            try {
+                const res = await App.post('/admin/enrollments', { student_id, section_id });
+                App.showAlert(res.message, 'success');
+                loadEnrollments();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteEnrollment(id) {
+            if (!confirm(`Are you sure you want to remove Enrollment #${id}?`)) return;
+            try {
+                await App.delete('/admin/enrollments', { enrollment_id: id });
+                App.showAlert('Enrollment removed.', 'success');
+                loadEnrollments();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadEnrollments);
+    </script>
+</body>
+</html>

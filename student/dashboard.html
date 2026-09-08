@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Student Academic Dashboard</h1>
+                        <p class="page-subtitle">Welcome back, <span id="student-name-header">Student</span>! Summer 2026 Semester.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#eff6ff; color:#2563eb;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Enrolled Credits (Summer '26)</div>
+                            <div class="stat-value" id="current-credits">0.0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#ecfdf5; color:#059669;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Cumulative GPA (CGPA)</div>
+                            <div class="stat-value" id="cgpa-val">0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Pending Tuition Due</div>
+                            <div class="stat-value" id="pending-dues">৳0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Advisor Card -->
+                <div class="card" style="margin-bottom: 24px; padding: 20px;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 12px;">👨‍🏫 Assigned Faculty Advisor</h3>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                        <div>
+                            <strong style="color: #1e293b; font-size: 1.05rem;" id="advisor-name">Loading...</strong>
+                            <div style="color: #64748b; font-size: 0.875rem;" id="advisor-email">Email: N/A</div>
+                        </div>
+                        <div style="margin-left: auto;">
+                            <a href="/student/pre_advising.html" class="btn btn-outline btn-sm">Request Advising</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Semester Enrolled Courses Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Summer 2026 Registered Sections & Schedule</h3>
+                        <a href="/student/advising.html" class="btn btn-primary btn-sm">+ Add / Take Section</a>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Title</th>
+                                    <th>Credits</th>
+                                    <th>Section</th>
+                                    <th>Time Slot</th>
+                                    <th>Room</th>
+                                    <th>Instructor</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enrolled-table-body">
+                                <tr><td colspan="8" style="text-align: center; color: #94a3b8; padding: 30px;">Loading enrolled courses...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadDashboard() {
+            const authOk = await App.requireAuth('student');
+            if (!authOk) return;
+
+            document.getElementById('student-name-header').innerText = App.user.name;
+
+            // Load profile for advisor
+            const me = await App.get('/me');
+            document.getElementById('advisor-name').innerText = me.advisor_name || 'No Advisor Assigned';
+            document.getElementById('advisor-email').innerText = me.advisor_email ? `Email: ${me.advisor_email}` : 'Contact registrar';
+
+            // Load dashboard stats & courses
+            const data = await App.get('/student/dashboard');
+            document.getElementById('cgpa-val').innerText = data.cgpa ? data.cgpa.toFixed(2) : '0.00';
+            document.getElementById('pending-dues').innerText = '৳' + Number(data.pending_dues || 0).toLocaleString();
+
+            let currentCredits = 0.0;
+            const tbody = document.getElementById('enrolled-table-body');
+            if (data.current_enrollments && data.current_enrollments.length > 0) {
+                tbody.innerHTML = data.current_enrollments.map(e => {
+                    currentCredits += Number(e.credits || 0);
+                    return `
+                        <tr>
+                            <td><strong>${App.escape(e.course_id)}</strong></td>
+                            <td>${App.escape(e.course_title)}</td>
+                            <td>${e.credits}</td>
+                            <td><span class="badge badge-blue">Sec ${e.section_no}</span></td>
+                            <td><span style="font-size:0.85rem; color:#475569;">${App.escape(e.time_slot)}</span></td>
+                            <td><code>${App.escape(e.room_no)}</code></td>
+                            <td>${App.escape(e.faculty_name || 'TBA')}</td>
+                            <td><span class="badge badge-success">${App.escape(e.status)}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8; padding: 30px;">No sections taken for Summer 2026 yet. Go to <a href="/student/advising.html">Official Advising</a> to select your sections.</td></tr>`;
+            }
+            document.getElementById('current-credits').innerText = currentCredits.toFixed(1);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

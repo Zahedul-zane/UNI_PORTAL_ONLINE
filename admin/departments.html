@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Departments - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Academic Departments Management</h1>
+                        <p class="page-subtitle">Configure department structures and assign Department Chairperson / Head Faculty.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <!-- Add / Edit Department Form -->
+                    <div class="card" style="padding: 24px; height: fit-content;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">🏢 Add / Edit Department</h3>
+                        <form id="dept-form" onsubmit="saveDepartment(event)">
+                            <div class="form-group">
+                                <label for="dept-id">Department Code (ID)</label>
+                                <input type="number" id="dept-id" class="form-control" placeholder="e.g. 101" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dept-name">Department Name</label>
+                                <input type="text" id="dept-name" class="form-control" placeholder="e.g. Computer Science & Engineering" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dept-head">Head Faculty / Chairperson</label>
+                                <select id="dept-head" class="form-control">
+                                    <option value="">-- No Head Assigned --</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-dept-btn" style="width: 100%;">
+                                Save Department
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Departments Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Departments Directory</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Dept ID</th>
+                                        <th>Department Name</th>
+                                        <th>Chairperson / Head</th>
+                                        <th style="text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="depts-body">
+                                    <tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">Loading departments...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadDepartments() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            // Load faculty for dropdown
+            const facData = await App.get('/admin/faculty');
+            const facList = facData.faculty || [];
+            const select = document.getElementById('dept-head');
+            select.innerHTML = `<option value="">-- No Head Assigned --</option>` + facList.map(f => `
+                <option value="${f.faculty_id}">${f.first_name} ${f.last_name} (${f.designation || 'Faculty'})</option>
+            `).join('');
+
+            // Load departments
+            const data = await App.get('/admin/departments');
+            const tbody = document.getElementById('depts-body');
+            const depts = data.departments || [];
+
+            if (depts.length > 0) {
+                tbody.innerHTML = depts.map(d => `
+                    <tr>
+                        <td><strong>${d.dept_id}</strong></td>
+                        <td>${App.escape(d.dept_name)}</td>
+                        <td>${d.head_faculty_name ? App.escape(d.head_faculty_name) : '<span style="color:#94a3b8;">Unassigned</span>'}</td>
+                        <td style="text-align:right;">
+                            <button onclick="editDept('${d.dept_id}', '${App.escape(d.dept_name)}', '${d.head_faculty_id || ''}')" class="btn btn-outline btn-sm" style="margin-right:4px;">Edit</button>
+                            <button onclick="deleteDept('${d.dept_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">No departments found.</td></tr>`;
+            }
+        }
+
+        function editDept(id, name, headId) {
+            document.getElementById('dept-id').value = id;
+            document.getElementById('dept-name').value = name;
+            document.getElementById('dept-head').value = headId;
+            document.getElementById('dept-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function saveDepartment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-dept-btn');
+            btn.disabled = true;
+
+            const dept_id = parseInt(document.getElementById('dept-id').value);
+            const dept_name = document.getElementById('dept-name').value.trim();
+            const head_faculty_id = document.getElementById('dept-head').value;
+
+            try {
+                const res = await App.post('/admin/departments', { dept_id, dept_name, head_faculty_id });
+                App.showAlert(res.message, 'success');
+                document.getElementById('dept-id').value = '';
+                document.getElementById('dept-name').value = '';
+                document.getElementById('dept-head').value = '';
+                loadDepartments();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteDept(id) {
+            if (!confirm(`Are you sure you want to delete Department #${id}?`)) return;
+            try {
+                await App.delete('/admin/departments', { dept_id: id });
+                App.showAlert('Department deleted successfully.', 'success');
+                loadDepartments();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDepartments);
+    </script>
+</body>
+</html>

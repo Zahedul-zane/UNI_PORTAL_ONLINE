@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Directory & Advisor Assignment - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Students Directory & Advisor Assignment</h1>
+                        <p class="page-subtitle">Register new admissions, assign academic advisors, and manage student records.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <!-- Add Student Form -->
+                    <div class="card" style="padding: 24px; height: fit-content;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">🎓 Register New Student</h3>
+                        <form id="student-form" onsubmit="saveStudent(event)">
+                            <div class="form-group">
+                                <label for="std-id">Student ID</label>
+                                <input type="text" id="std-id" class="form-control" placeholder="e.g. 2023-3-60-625" required>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label for="std-fname">First Name</label>
+                                    <input type="text" id="std-fname" class="form-control" placeholder="First Name" required>
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label for="std-lname">Last Name</label>
+                                    <input type="text" id="std-lname" class="form-control" placeholder="Last Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="std-email">Student Email</label>
+                                <input type="email" id="std-email" class="form-control" placeholder="student.id@std.ewubd.edu" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="std-dept">Department</label>
+                                <select id="std-dept" class="form-control" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="std-advisor">Assign Initial Advisor</label>
+                                <select id="std-advisor" class="form-control">
+                                    <option value="">-- No Advisor --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="std-address">Address</label>
+                                <input type="text" id="std-address" class="form-control" placeholder="Dhaka, Bangladesh">
+                            </div>
+                            <div class="form-group">
+                                <label for="std-phone">Phone Number</label>
+                                <input type="text" id="std-phone" class="form-control" placeholder="+8801...">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-std-btn" style="width: 100%;">
+                                Register Student
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Students Directory Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Enrolled Students</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Student Name</th>
+                                        <th>Department</th>
+                                        <th>Advisor</th>
+                                        <th>Contact</th>
+                                        <th style="text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="students-table-body">
+                                    <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">Loading students...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        let facultyOptions = [];
+
+        async function loadStudents() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            // Load departments
+            const deptData = await App.get('/admin/departments');
+            const depts = deptData.departments || [];
+            document.getElementById('std-dept').innerHTML = depts.map(d => `
+                <option value="${d.dept_id}">${d.dept_name} (${d.dept_id})</option>
+            `).join('');
+
+            // Load faculty
+            const facData = await App.get('/admin/faculty');
+            facultyOptions = facData.faculty || [];
+            document.getElementById('std-advisor').innerHTML = `<option value="">-- No Advisor --</option>` + facultyOptions.map(f => `
+                <option value="${f.faculty_id}">${f.first_name} ${f.last_name}</option>
+            `).join('');
+
+            // Load students
+            const data = await App.get('/admin/students');
+            const tbody = document.getElementById('students-table-body');
+            const students = data.students || [];
+
+            if (students.length > 0) {
+                tbody.innerHTML = students.map(s => `
+                    <tr>
+                        <td><code>${App.escape(s.student_id)}</code></td>
+                        <td><strong>${App.escape(s.first_name)} ${App.escape(s.last_name)}</strong></td>
+                        <td>${App.escape(s.dept_name || 'N/A')}</td>
+                        <td>
+                            <select onchange="changeAdvisor('${s.student_id}', this.value)" class="form-control form-control-sm" style="max-width:180px;">
+                                <option value="">-- No Advisor --</option>
+                                ${facultyOptions.map(f => `
+                                    <option value="${f.faculty_id}" ${f.faculty_id === s.faculty_id ? 'selected' : ''}>
+                                        ${f.first_name} ${f.last_name}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            <div style="font-size:0.85rem;">${App.escape(s.email || '')}</div>
+                            <div style="font-size:0.75rem; color:#64748b;">${App.escape(s.phone1 || '')}</div>
+                        </td>
+                        <td style="text-align:right;">
+                            <button onclick="deleteStudent('${s.student_id}')" class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#fca5a5;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 20px;">No students registered yet.</td></tr>`;
+            }
+        }
+
+        async function changeAdvisor(studentId, facultyId) {
+            try {
+                const res = await App.post('/admin/assign-advisor', {
+                    student_id: studentId,
+                    faculty_id: facultyId
+                });
+                App.showAlert(res.message, 'success');
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        async function saveStudent(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-std-btn');
+            btn.disabled = true;
+
+            const student_id = document.getElementById('std-id').value.trim();
+            const first_name = document.getElementById('std-fname').value.trim();
+            const last_name = document.getElementById('std-lname').value.trim();
+            const email = document.getElementById('std-email').value.trim();
+            const dept_id = document.getElementById('std-dept').value;
+            const faculty_id = document.getElementById('std-advisor').value;
+            const address = document.getElementById('std-address').value.trim();
+            const phone1 = document.getElementById('std-phone').value.trim();
+
+            try {
+                const res = await App.post('/admin/students', {
+                    student_id, first_name, last_name, email, dept_id, faculty_id, address, phone1
+                });
+                App.showAlert(res.message, 'success');
+                document.getElementById('student-form').reset();
+                loadStudents();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteStudent(id) {
+            if (!confirm(`Are you sure you want to delete Student #${id}?`)) return;
+            try {
+                await App.delete('/admin/students', { student_id: id });
+                App.showAlert('Student deleted successfully.', 'success');
+                loadStudents();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadStudents);
+    </script>
+</body>
+</html>

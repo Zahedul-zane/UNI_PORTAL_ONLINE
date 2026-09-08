@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Profile - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Faculty Member Profile</h1>
+                        <p class="page-subtitle">Manage your room number, official contact phones, and password.</p>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <!-- Academic Info -->
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">👨‍🏫 Academic Credentials</h3>
+                        <div class="form-group">
+                            <label>Faculty ID</label>
+                            <input type="text" id="fac-id" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="fac-name" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Designation</label>
+                            <input type="text" id="fac-desig" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="fac-dept" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                        <div class="form-group">
+                            <label>University Email</label>
+                            <input type="text" id="fac-email" class="form-control" readonly style="background: #f8fafc;">
+                        </div>
+                    </div>
+
+                    <!-- Editable Contact Info -->
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">✏️ Office & Security Settings</h3>
+                        <form id="fac-profile-form" onsubmit="saveFacultyProfile(event)">
+                            <div class="form-group">
+                                <label for="fac-room">Office Room Number</label>
+                                <input type="text" id="fac-room" class="form-control" placeholder="e.g. AB1-602">
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-phone1">Primary Contact Number</label>
+                                <input type="text" id="fac-phone1" class="form-control" placeholder="+8801...">
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-phone2">Alternate Phone (Optional)</label>
+                                <input type="text" id="fac-phone2" class="form-control" placeholder="+8801...">
+                            </div>
+                            <div class="form-group">
+                                <label for="fac-pass">New Password (leave blank to keep current)</label>
+                                <input type="password" id="fac-pass" class="form-control" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-fac-btn">
+                                Save Profile Updates
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadProfile() {
+            const authOk = await App.requireAuth('faculty');
+            if (!authOk) return;
+
+            const me = await App.get('/me');
+            document.getElementById('fac-id').value = me.user_id || '';
+            document.getElementById('fac-name').value = (me.first_name || '') + ' ' + (me.last_name || '');
+            document.getElementById('fac-desig').value = me.designation || '';
+            document.getElementById('fac-dept').value = me.dept_name || '';
+            document.getElementById('fac-email').value = me.email || '';
+            document.getElementById('fac-room').value = me.room_no || '';
+            document.getElementById('fac-phone1').value = me.phone1 || '';
+            document.getElementById('fac-phone2').value = me.phone2 || '';
+        }
+
+        async function saveFacultyProfile(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-fac-btn');
+            btn.disabled = true;
+            btn.innerText = 'Saving...';
+
+            const room_no = document.getElementById('fac-room').value.trim();
+            const phone1 = document.getElementById('fac-phone1').value.trim();
+            const phone2 = document.getElementById('fac-phone2').value.trim();
+            const new_password = document.getElementById('fac-pass').value;
+
+            try {
+                const res = await App.post('/faculty/profile', { room_no, phone1, phone2, new_password });
+                App.showAlert('Profile updated successfully!', 'success');
+                document.getElementById('fac-pass').value = '';
+            } catch (err) {
+                App.showAlert(err.message || 'Failed to update profile.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Save Profile Updates';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

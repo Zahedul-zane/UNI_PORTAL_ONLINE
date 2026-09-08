@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Database Manager - East West University</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-body">
+    <div class="app-layout">
+        <aside class="app-sidebar" id="app-sidebar"></aside>
+
+        <div class="app-main">
+            <header class="app-header" id="app-header"></header>
+
+            <main class="app-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Excel Database Management</h1>
+                        <p class="page-subtitle">Zero-SQL Excel-based persistent database engine running on Node.js Backend with real-time two-way synchronization.</p>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <a href="/data/EWU_University_Portal_Database.xlsx" download class="btn btn-primary" style="display:inline-flex; align-items:center; gap:8px;">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download Master Workbook (.xlsx)
+                        </a>
+                        <a href="/data/EWU_University_Portal_Database.xml" download class="btn btn-outline" style="display:inline-flex; align-items:center; gap:8px;">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download Excel XML (.xml)
+                        </a>
+                    </div>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 28px;">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#eff6ff; color:#2563eb;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Active Tables</div>
+                            <div class="stat-value" id="stat-tables-count">14 Tables</div>
+                            <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">100% Excel Persistent</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#ecfdf5; color:#059669;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Total Records</div>
+                            <div class="stat-value" id="stat-total-rows">0</div>
+                            <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Across all sheets</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Database Storage</div>
+                            <div class="stat-value" style="font-size:1.15rem; color:#0f172a;">Excel Files</div>
+                            <div style="font-size:0.75rem; color:#10b981; font-weight:600; margin-top:4px;">Zero SQL Server Needed</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#f1f5f9; color:#475569;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-label">Master Workbook</div>
+                            <div class="stat-value" style="font-size:1.1rem; color:#0f172a;">Multi-Sheet XML</div>
+                            <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Opens in Microsoft Excel</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Tools -->
+                <div class="card" style="padding: 24px; margin-bottom: 28px;">
+                    <h3 style="font-size:1rem; font-weight:700; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Synchronization & Backup Controls
+                    </h3>
+                    <p style="font-size:0.875rem; color:#64748b; margin-bottom:16px;">
+                        The Node.js backend automatically syncs whenever modifications occur. You can also trigger an immediate flush to disk or reload from Excel spreadsheets.
+                    </p>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button onclick="syncAll()" class="btn btn-outline" id="sync-btn" style="font-size:0.875rem;">
+                            Sync All Memory to Excel Files
+                        </button>
+                        <button onclick="reloadAll()" class="btn btn-secondary" id="reload-btn" style="font-size:0.875rem;">
+                            Reload Memory from Excel Spreadsheets
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Directory -->
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 class="card-title">Database Spreadsheets Directory</h3>
+                        <span style="font-size:0.8rem; color:#64748b;">Storage: <code>data/*.csv</code></span>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Table Name</th>
+                                    <th>Records (Rows)</th>
+                                    <th>Excel File</th>
+                                    <th style="text-align:right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="excel-tables-body">
+                                <tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">Loading tables...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        async function loadExcelStats() {
+            const authOk = await App.requireAuth('admin');
+            if (!authOk) return;
+
+            const data = await App.get('/admin/excel/stats');
+            const tables = data.tables || [];
+
+            document.getElementById('stat-tables-count').innerText = `${tables.length} Tables`;
+            document.getElementById('stat-total-rows').innerText = Number(data.total_rows || 0).toLocaleString();
+
+            const tbody = document.getElementById('excel-tables-body');
+            if (tables.length > 0) {
+                tbody.innerHTML = tables.map(t => `
+                    <tr>
+                        <td>
+                            <strong style="color:#0f172a; text-transform:capitalize; font-size:0.95rem;">
+                                ${App.escape(t.name.replace(/_/g, ' '))}
+                            </strong>
+                            <div style="font-size:0.75rem; color:#64748b; font-family:monospace;">table: ${App.escape(t.name)}</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-blue" style="font-size:0.85rem; padding:4px 10px;">
+                                ${Number(t.rows).toLocaleString()} rows
+                            </span>
+                        </td>
+                        <td><code>${App.escape(t.csv_file)}</code></td>
+                        <td style="text-align:right;">
+                            <a href="/data/${t.csv_file}" download class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:4px;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Download CSV
+                            </a>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">No tables found.</td></tr>`;
+            }
+        }
+
+        async function syncAll() {
+            const btn = document.getElementById('sync-btn');
+            btn.disabled = true;
+            btn.innerText = 'Syncing...';
+            try {
+                const res = await App.post('/admin/excel/sync', {});
+                App.showAlert(res.message, 'success');
+                loadExcelStats();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Sync All Memory to Excel Files';
+            }
+        }
+
+        async function reloadAll() {
+            if (!confirm('Reloading will replace active memory with the current Excel file contents on disk. Continue?')) return;
+            const btn = document.getElementById('reload-btn');
+            btn.disabled = true;
+            btn.innerText = 'Reloading...';
+            try {
+                const res = await App.post('/admin/excel/reload', {});
+                App.showAlert(res.message, 'success');
+                loadExcelStats();
+            } catch (err) {
+                App.showAlert(err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Reload Memory from Excel Spreadsheets';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadExcelStats);
+    </script>
+</body>
+</html>
