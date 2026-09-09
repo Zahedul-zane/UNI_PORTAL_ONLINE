@@ -141,6 +141,11 @@
                             <input type="text" id="room_no" name="room_no" class="form-control" placeholder="e.g. AB1-402">
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="faculty_id">Faculty Initial / ID (Optional)</label>
+                        <input type="text" id="faculty_id" name="faculty_id" class="form-control" placeholder="e.g. AHN, MRI (Leave blank to auto-generate from name)" maxlength="8" style="text-transform: uppercase;">
+                        <div class="helper-text">💡 If left blank, a unique short-form code is automatically generated from your name (e.g. AHN).</div>
+                    </div>
                 </div>
 
                 <!-- Password & Confirm Password (Grid) -->
@@ -177,7 +182,23 @@
 
     <script src="/assets/js/app.js"></script>
     <script>
+        // Redirect if opened as raw disk file instead of web server
+        if (window.location.protocol === 'file:') {
+            window.location.href = 'http://localhost:8000/register.html';
+        }
+
+        // Clear any old session tokens so a new registration starts clean
+        localStorage.removeItem('ewu_token');
+        localStorage.removeItem('ewu_role');
+
         let currentRole = 'student';
+
+        // Check if URL has ?role= query param
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedRole = urlParams.get('role');
+        if (requestedRole === 'faculty' || requestedRole === 'student') {
+            setRole(requestedRole);
+        }
 
         function setRole(role) {
             currentRole = role;
@@ -217,6 +238,8 @@
         }
         loadDepartments();
 
+        let redirectTimer = null;
+
         async function handleRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('reg-btn');
@@ -251,36 +274,88 @@
             } else {
                 payload.designation = document.getElementById('designation').value;
                 payload.room_no = document.getElementById('room_no').value.trim();
+                payload.faculty_id = document.getElementById('faculty_id') ? document.getElementById('faculty_id').value.trim().toUpperCase() : '';
             }
 
             btn.disabled = true;
             btn.innerHTML = 'Registering Account...';
 
+            // Clear any stale local auth tokens before registering
+            localStorage.removeItem('ewu_token');
+            localStorage.removeItem('ewu_role');
+
             try {
                 const res = await App.post('/register', payload);
                 if (res.success) {
-                    alertBox.className = 'alert alert-success';
-                    alertBox.innerHTML = `
-                        <div>
-                            <strong>🎉 ${res.message || 'Registration Successful!'}</strong>
-                            <div style="font-size:0.85rem; margin-top:4px;">Signing you into the portal now...</div>
-                        </div>
-                    `;
-                    alertBox.style.display = 'flex';
+                    const assignedId = res.user_id;
+                    const roleName = res.role === 'student' ? 'Student ID' : 'Faculty ID';
 
                     if (res.token) {
                         localStorage.setItem('ewu_token', res.token);
                         localStorage.setItem('ewu_role', res.role);
                     }
 
-                    setTimeout(() => {
-                        window.location.href = `/${res.role}/dashboard.html`;
-                    }, 1200);
+                    alertBox.className = 'alert alert-success';
+                    alertBox.style.display = 'block';
+                    alertBox.style.padding = '18px 20px';
+                    alertBox.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="font-size: 1.05rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 8px;">
+                                <span>🎉</span> <span>Registration Successful!</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.92); border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; color: #1e293b;">
+                                <div style="font-size: 0.92rem; margin-bottom: 4px;">
+                                    Official <strong>${roleName}:</strong> 
+                                    <span style="font-family: monospace; font-size: 1.15rem; font-weight: 800; color: #0f2b48; background: #e0f2fe; padding: 2px 8px; border-radius: 4px; border: 1px solid #bae6fd;">
+                                        ${assignedId}
+                                    </span>
+                                </div>
+                                <div style="font-size: 0.88rem; color: #475569;">
+                                    Registered Email: <strong>${res.email}</strong>
+                                </div>
+                                <div style="font-size: 0.82rem; color: #15803d; margin-top: 6px;">
+                                    💡 <strong>Login Notice:</strong> You can log in using either your <strong>${roleName}</strong> OR your <strong>Email</strong> anytime.
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; flex-wrap: wrap;">
+                                <a href="/${res.role}/dashboard.html" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                    Enter Portal Dashboard Now &rarr;
+                                </a>
+                                <span style="font-size: 0.82rem; color: #166534;" id="redirect-counter">Entering in 4s...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Disable button and hide form fields
+                    btn.style.display = 'none';
+
+                    // Countdown to dashboard
+                    let secondsLeft = 4;
+                    redirectTimer = setInterval(() => {
+                        secondsLeft--;
+                        const counterEl = document.getElementById('redirect-counter');
+                        if (counterEl) {
+                            counterEl.innerText = `Entering in ${secondsLeft}s...`;
+                        }
+                        if (secondsLeft <= 0) {
+                            clearInterval(redirectTimer);
+                            window.location.href = `/${res.role}/dashboard.html`;
+                        }
+                    }, 1000);
 
                 } else {
                     alertBox.className = 'alert alert-danger';
-                    alertBox.innerHTML = `<span>⚠️ ${res.error || 'Registration failed'}</span>`;
-                    alertBox.style.display = 'flex';
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <span>⚠️ ${res.error || 'Registration failed'}</span>
+                            ${(res.error || '').includes('already exists') ? `
+                                <a href="/login.html?email=${encodeURIComponent(payload.email)}&role=${currentRole}" class="btn btn-outline btn-sm" style="align-self: flex-start; text-decoration: none; font-weight: 600; padding: 6px 14px;">
+                                    Sign In to Existing Account &rarr;
+                                </a>
+                            ` : ''}
+                        </div>
+                    `;
                     btn.disabled = false;
                     btn.innerHTML = `
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -289,8 +364,17 @@
                 }
             } catch (err) {
                 alertBox.className = 'alert alert-danger';
-                alertBox.innerHTML = `<span>⚠️ ${err.message || 'Connection error. Please try again.'}</span>`;
-                alertBox.style.display = 'flex';
+                alertBox.style.display = 'block';
+                alertBox.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span>⚠️ ${err.message || 'Connection error. Please try again.'}</span>
+                        ${(err.message || '').includes('already exists') ? `
+                            <a href="/login.html?email=${encodeURIComponent(payload.email)}&role=${currentRole}" class="btn btn-outline btn-sm" style="align-self: flex-start; text-decoration: none; font-weight: 600; padding: 6px 14px;">
+                                Sign In to Existing Account &rarr;
+                            </a>
+                        ` : ''}
+                    </div>
+                `;
                 btn.disabled = false;
                 btn.innerHTML = `
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

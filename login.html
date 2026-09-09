@@ -31,8 +31,8 @@
                 <input type="hidden" name="selected_role" id="selected_role" value="student">
 
                 <div class="form-group">
-                    <label id="user_id_label" for="user_id">Student ID (e.g. 2023-3-60-621)</label>
-                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="Enter your ID or Username" required autofocus>
+                    <label id="user_id_label" for="user_id">Student ID or Registered Email</label>
+                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="e.g. 2023-3-60-621 or name@std.ewubd.edu" required autofocus>
                 </div>
 
                 <div class="form-group">
@@ -74,9 +74,29 @@
                 tab.classList.toggle('active', tab.dataset.role === role);
             });
             const label = document.getElementById('user_id_label');
-            if (role === 'student') label.innerText = 'Student ID (e.g. 2023-3-60-621)';
-            else if (role === 'faculty') label.innerText = 'Faculty ID (e.g. 1652688915)';
-            else label.innerText = 'Username (admin)';
+            const input = document.getElementById('user_id');
+            if (role === 'student') {
+                label.innerText = 'Student ID or Registered Email';
+                input.placeholder = 'e.g. 2023-3-60-621 or name@std.ewubd.edu';
+            } else if (role === 'faculty') {
+                label.innerText = 'Faculty Initial / ID or Registered Email';
+                input.placeholder = 'e.g. AHN, MRI or name@ewubd.edu';
+            } else {
+                label.innerText = 'Username or Admin Email';
+                input.placeholder = 'admin or admin@ewubd.edu';
+            }
+        }
+
+        // Auto-fill from query params if redirected from registration
+        const urlParams = new URLSearchParams(window.location.search);
+        const roleParam = urlParams.get('role');
+        const emailParam = urlParams.get('email');
+        if (roleParam === 'faculty' || roleParam === 'admin' || roleParam === 'student') {
+            setRole(roleParam);
+        }
+        if (emailParam) {
+            document.getElementById('user_id').value = emailParam;
+            document.getElementById('password').focus();
         }
 
         async function handleLogin(e) {

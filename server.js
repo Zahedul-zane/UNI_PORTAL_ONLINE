@@ -119,13 +119,18 @@ app.post('/api/login', (req, res) => {
     if (!userId || !password) {
         return res.status(400).json({
             success: false,
-            error: 'Please enter both User ID and Password.'
+            error: 'Please enter both User ID / Email and Password.'
         });
     }
 
+    const lookupId = userId.toLowerCase();
+
     if (role === 'student') {
         const students = engine.tables['student'] ? engine.tables['student'].rows : [];
-        const student = students.find(s => s.Student_ID === userId);
+        const student = students.find(s => 
+            (s.Student_ID && s.Student_ID.toLowerCase() === lookupId) || 
+            (s.E_mail && s.E_mail.toLowerCase() === lookupId)
+        );
         if (student) {
             if (password === 'student123' || password === student.Password || (student.Password && student.Password.includes('$2y$'))) {
                 const fullName = `${student.First_name || ''} ${student.Last_name || ''}`.trim();
@@ -150,11 +155,14 @@ app.post('/api/login', (req, res) => {
                 });
             }
         }
-        return res.status(401).json({ success: false, error: 'Invalid Student ID or Password.' });
+        return res.status(401).json({ success: false, error: 'Invalid Student ID / Email or Password.' });
 
     } else if (role === 'faculty') {
         const facultyList = engine.tables['faculty'] ? engine.tables['faculty'].rows : [];
-        const faculty = facultyList.find(f => f.Faculty_ID === userId);
+        const faculty = facultyList.find(f => 
+            (f.Faculty_ID && f.Faculty_ID.toLowerCase() === lookupId) || 
+            (f.E_mail && f.E_mail.toLowerCase() === lookupId)
+        );
         if (faculty) {
             if (password === 'faculty123' || password === faculty.Password || (faculty.Password && faculty.Password.includes('$2y$'))) {
                 const fullName = `${faculty.First_name || ''} ${faculty.Last_name || ''}`.trim();
@@ -179,11 +187,14 @@ app.post('/api/login', (req, res) => {
                 });
             }
         }
-        return res.status(401).json({ success: false, error: 'Invalid Faculty ID or Password.' });
+        return res.status(401).json({ success: false, error: 'Invalid Faculty ID / Email or Password.' });
 
     } else if (role === 'admin') {
         const admins = engine.tables['admin'] ? engine.tables['admin'].rows : [];
-        const admin = admins.find(a => a.Username === userId);
+        const admin = admins.find(a => 
+            (a.Username && a.Username.toLowerCase() === lookupId) || 
+            (a.E_mail && a.E_mail.toLowerCase() === lookupId)
+        );
         if (admin) {
             if (password === 'admin123' || password === admin.Password || (admin.Password && admin.Password.includes('$2y$'))) {
                 const sessionData = {
@@ -207,7 +218,7 @@ app.post('/api/login', (req, res) => {
                 });
             }
         }
-        return res.status(401).json({ success: false, error: 'Invalid Admin Username or Password.' });
+        return res.status(401).json({ success: false, error: 'Invalid Admin Username / Email or Password.' });
     }
 
     res.status(400).json({ success: false, error: 'Invalid role selected.' });
@@ -225,6 +236,86 @@ app.get('/api/departments', (req, res) => {
         }))
     });
 });
+
+// ─── UNIQUE ID GENERATORS ─────────────────────────────────────────────────────
+
+function generateUniqueStudentId(existingStudents = []) {
+    let maxRoll = 620;
+    for (const s of existingStudents) {
+        const parts = (s.Student_ID || '').split('-');
+        if (parts.length === 4) {
+            const roll = parseInt(parts[3], 10);
+            if (!isNaN(roll) && roll > maxRoll) {
+                maxRoll = roll;
+            }
+        }
+    }
+    const currentYear = new Date().getFullYear();
+    let nextRoll = maxRoll + 1;
+    let candidateId = `${currentYear}-3-60-${nextRoll}`;
+    while (existingStudents.some(s => (s.Student_ID || '').toLowerCase() === candidateId.toLowerCase())) {
+        nextRoll++;
+        candidateId = `${currentYear}-3-60-${nextRoll}`;
+    }
+    return candidateId;
+}
+
+function generateFacultyShortId(firstName, lastName, existingFaculty = []) {
+    const cleanTitles = (str) => {
+        return str
+            .replace(/\b(dr|prof|professor|mr|mrs|ms|engr|adv|md|mohammad|muhammad)\.?\b/gi, '')
+            .trim();
+    };
+
+    let cleanFirst = cleanTitles(firstName || '');
+    let cleanLast = cleanTitles(lastName || '');
+
+    if (!cleanFirst) cleanFirst = (firstName || '').trim();
+    if (!cleanLast) cleanLast = (lastName || '').trim();
+
+    const words = `${cleanFirst} ${cleanLast}`
+        .replace(/[^a-zA-Z\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 0);
+
+    let base = '';
+    if (words.length >= 3) {
+        base = words.slice(0, 3).map(w => w[0].toUpperCase()).join('');
+    } else if (words.length === 2) {
+        const w1 = words[0].toUpperCase();
+        const w2 = words[1].toUpperCase();
+        if (w2.length >= 2) {
+            base = `${w1[0]}${w2[0]}${w2[w2.length - 1]}`;
+        } else {
+            base = `${w1[0]}${w2[0]}`;
+        }
+    } else if (words.length === 1) {
+        base = words[0].substring(0, 3).toUpperCase();
+    } else {
+        base = 'FAC';
+    }
+    base = base.toUpperCase();
+
+    const isTaken = (code) => {
+        return existingFaculty.some(f => (f.Faculty_ID || '').toUpperCase() === code.toUpperCase());
+    };
+
+    if (!isTaken(base)) return base;
+
+    if (words.length >= 2) {
+        const initials2 = `${words[0][0]}${words[1][0]}`.toUpperCase();
+        if (!isTaken(initials2)) return initials2;
+
+        const first3 = `${words[0][0]}${words[1].substring(0, 2)}`.toUpperCase();
+        if (!isTaken(first3)) return first3;
+    }
+
+    let suffix = 1;
+    while (isTaken(`${base}${suffix}`)) {
+        suffix++;
+    }
+    return `${base}${suffix}`;
+}
 
 // ─── USER REGISTRATION ROUTE ───────────────────────────────────────────────────
 
@@ -270,27 +361,14 @@ app.post('/api/register', (req, res) => {
     if (role === 'student') {
         let studentId = (req.body.student_id || '').trim();
         if (studentId) {
-            if (students.some(s => s.Student_ID === studentId)) {
+            if (students.some(s => (s.Student_ID || '').toLowerCase() === studentId.toLowerCase())) {
                 return res.status(400).json({
                     success: false,
                     error: `Student ID ${studentId} is already registered. Please enter a different ID or leave blank to auto-generate.`
                 });
             }
         } else {
-            // Auto-generate official EWU Student ID format: YYYY-Semester-Dept-Roll (e.g. 2024-3-60-625)
-            let maxRoll = 620;
-            for (const s of students) {
-                const parts = (s.Student_ID || '').split('-');
-                if (parts.length === 4) {
-                    const roll = parseInt(parts[3], 10);
-                    if (!isNaN(roll) && roll > maxRoll) {
-                        maxRoll = roll;
-                    }
-                }
-            }
-            const nextRoll = maxRoll + 1;
-            const currentYear = new Date().getFullYear();
-            studentId = `${currentYear}-3-60-${nextRoll}`;
+            studentId = generateUniqueStudentId(students);
         }
 
         // Auto-assign faculty advisor from department
@@ -354,16 +432,21 @@ app.post('/api/register', (req, res) => {
     } else if (role === 'faculty') {
         const designation = (req.body.designation || 'Lecturer').trim();
         const roomNo = (req.body.room_no || 'AB1-401').trim();
+        const customFacId = (req.body.faculty_id || '').trim().toUpperCase();
 
-        // Auto-generate 10-digit Faculty ID
-        let maxFacId = 1652688918;
-        for (const f of facultyList) {
-            const num = parseInt(f.Faculty_ID, 10);
-            if (!isNaN(num) && num > maxFacId) {
-                maxFacId = num;
+        let newFacultyId = '';
+        if (customFacId) {
+            if (facultyList.some(f => (f.Faculty_ID || '').toUpperCase() === customFacId)) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Faculty Initial / ID "${customFacId}" is already taken. Please choose a different initial or leave blank to auto-generate.`
+                });
             }
+            newFacultyId = customFacId;
+        } else {
+            // Auto-generate unique short form of their name (e.g. AHN, MRI, FST)
+            newFacultyId = generateFacultyShortId(firstName, lastName, facultyList);
         }
-        const newFacultyId = String(maxFacId + 1);
 
         facultyList.push({
             Faculty_ID: newFacultyId,
@@ -403,7 +486,7 @@ app.post('/api/register', (req, res) => {
         res.cookie('ewu_session', token, { path: '/', httpOnly: true });
         return res.json({
             success: true,
-            message: `Faculty registration successful! Your Faculty ID is ${newFacultyId}.`,
+            message: `Faculty registration successful! Your Faculty Initial / ID is ${newFacultyId}.`,
             token,
             role: 'faculty',
             user_id: newFacultyId,
@@ -429,7 +512,10 @@ app.get('/api/me', (req, res) => {
     };
 
     if (req.userRole === 'student') {
-        const student = (engine.tables['student']?.rows || []).find(s => s.Student_ID === req.userId);
+        const student = (engine.tables['student']?.rows || []).find(s => 
+            (s.Student_ID && s.Student_ID.toLowerCase() === String(req.userId).toLowerCase()) ||
+            (s.E_mail && s.E_mail.toLowerCase() === (req.userEmail || '').toLowerCase())
+        );
         if (student) {
             resp.first_name = student.First_name || '';
             resp.last_name = student.Last_name || '';
@@ -439,23 +525,33 @@ app.get('/api/me', (req, res) => {
             resp.faculty_id = student.Faculty_ID || '';
 
             const dept = (engine.tables['department']?.rows || []).find(d => d.Dept_ID === student.Dept_ID);
-            resp.dept_name = dept ? dept.Dept_Name : '';
+            resp.dept_name = dept ? dept.Dept_Name : 'Computer Science & Engineering';
 
             const faculty = (engine.tables['faculty']?.rows || []).find(f => f.Faculty_ID === student.Faculty_ID);
             if (faculty) {
                 resp.advisor_name = `${faculty.First_name || ''} ${faculty.Last_name || ''}`.trim();
                 resp.advisor_email = faculty.E_mail || '';
             } else {
-                resp.advisor_name = '';
-                resp.advisor_email = '';
+                resp.advisor_name = 'Dr. Ahmed Hasan';
+                resp.advisor_email = 'ahmed.hasan@ewubd.edu';
             }
 
             const phone = (engine.tables['student_phonenum']?.rows || []).find(sp => sp.Student_ID === req.userId);
             resp.phone1 = phone ? phone.Phone_Number1 : '';
             resp.phone2 = phone ? phone.Phone_Number2 : '';
+        } else {
+            const parts = (req.userName || 'Student').split(' ');
+            resp.first_name = parts[0] || 'Student';
+            resp.last_name = parts.slice(1).join(' ') || '';
+            resp.dept_name = 'Computer Science & Engineering';
+            resp.advisor_name = 'Dr. Ahmed Hasan';
+            resp.advisor_email = 'ahmed.hasan@ewubd.edu';
         }
     } else if (req.userRole === 'faculty') {
-        const faculty = (engine.tables['faculty']?.rows || []).find(f => f.Faculty_ID === req.userId);
+        const faculty = (engine.tables['faculty']?.rows || []).find(f => 
+            (f.Faculty_ID && f.Faculty_ID.toLowerCase() === String(req.userId).toLowerCase()) ||
+            (f.E_mail && f.E_mail.toLowerCase() === (req.userEmail || '').toLowerCase())
+        );
         if (faculty) {
             resp.first_name = faculty.First_name || '';
             resp.last_name = faculty.Last_name || '';
@@ -464,11 +560,18 @@ app.get('/api/me', (req, res) => {
             resp.dept_id = faculty.Dept_ID || '';
 
             const dept = (engine.tables['department']?.rows || []).find(d => d.Dept_ID === faculty.Dept_ID);
-            resp.dept_name = dept ? dept.Dept_Name : '';
+            resp.dept_name = dept ? dept.Dept_Name : 'Computer Science & Engineering';
 
             const phone = (engine.tables['faculty_phonenum']?.rows || []).find(fp => fp.Faculty_ID === req.userId);
             resp.phone1 = phone ? phone.Phone_Number1 : '';
             resp.phone2 = phone ? phone.Phone_Number2 : '';
+        } else {
+            const parts = (req.userName || 'Faculty').split(' ');
+            resp.first_name = parts[0] || 'Faculty';
+            resp.last_name = parts.slice(1).join(' ') || '';
+            resp.designation = 'Lecturer';
+            resp.room_no = 'AB1-401';
+            resp.dept_name = 'Computer Science & Engineering';
         }
     }
 
@@ -1293,18 +1396,48 @@ app.get('/api/admin/faculty', requireAuth('admin'), (req, res) => {
 });
 
 app.post('/api/admin/faculty', requireAuth('admin'), (req, res) => {
-    const { faculty_id, first_name, last_name, designation, room_no, email, dept_id, phone1 } = req.body;
+    let { faculty_id, first_name, last_name, designation, room_no, email, dept_id, phone1 } = req.body;
 
-    if (!faculty_id || !first_name || !email) {
-        return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
+    first_name = (first_name || '').trim();
+    last_name = (last_name || '').trim();
+    email = (email || '').trim().toLowerCase();
+    faculty_id = (faculty_id || '').trim().toUpperCase();
+
+    if (!first_name || !email) {
+        return res.status(400).json({ success: false, error: 'Please provide First Name and Email.' });
     }
 
     const facRows = engine.tables['faculty']?.rows || [];
+    const stdRows = engine.tables['student']?.rows || [];
+    const adminRows = engine.tables['admin']?.rows || [];
+
+    // Check email uniqueness across all tables
+    if (facRows.some(f => (f.E_mail || '').toLowerCase() === email) ||
+        stdRows.some(s => (s.E_mail || '').toLowerCase() === email) ||
+        adminRows.some(a => (a.E_mail || '').toLowerCase() === email)) {
+        return res.status(400).json({
+            success: false,
+            error: 'An account with this email address already exists. Please use a different email.'
+        });
+    }
+
+    // Auto-generate or validate unique faculty ID (short initials)
+    if (!faculty_id) {
+        faculty_id = generateFacultyShortId(first_name, last_name, facRows);
+    } else {
+        if (facRows.some(f => (f.Faculty_ID || '').toUpperCase() === faculty_id)) {
+            return res.status(400).json({
+                success: false,
+                error: `Faculty Initial / ID "${faculty_id}" is already taken. Please enter a different initial or leave blank to auto-generate.`
+            });
+        }
+    }
+
     facRows.push({
         Faculty_ID: faculty_id,
         First_name: first_name,
         Last_name: last_name || '',
-        Designation: designation || '',
+        Designation: designation || 'Lecturer',
         Room_No: room_no || '',
         E_mail: email,
         Password: 'faculty123',
@@ -1326,7 +1459,8 @@ app.post('/api/admin/faculty', requireAuth('admin'), (req, res) => {
 
     res.json({
         success: true,
-        message: `Faculty ${first_name} ${last_name || ''} added successfully.`
+        faculty_id,
+        message: `Faculty ${first_name} ${last_name || ''} registered with Initial/ID ${faculty_id}. Default password: faculty123`
     });
 });
 
@@ -1374,13 +1508,43 @@ app.get('/api/admin/students', requireAuth('admin'), (req, res) => {
 });
 
 app.post('/api/admin/students', requireAuth('admin'), (req, res) => {
-    const { student_id, first_name, last_name, email, address, dob, faculty_id, dept_id, phone1 } = req.body;
+    let { student_id, first_name, last_name, email, address, dob, faculty_id, dept_id, phone1 } = req.body;
 
-    if (!student_id || !first_name || !email) {
-        return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
+    first_name = (first_name || '').trim();
+    last_name = (last_name || '').trim();
+    email = (email || '').trim().toLowerCase();
+    student_id = (student_id || '').trim();
+
+    if (!first_name || !email) {
+        return res.status(400).json({ success: false, error: 'Please provide First Name and Email.' });
     }
 
     const stdRows = engine.tables['student']?.rows || [];
+    const facRows = engine.tables['faculty']?.rows || [];
+    const adminRows = engine.tables['admin']?.rows || [];
+
+    // Check email uniqueness across all user tables
+    if (stdRows.some(s => (s.E_mail || '').toLowerCase() === email) ||
+        facRows.some(f => (f.E_mail || '').toLowerCase() === email) ||
+        adminRows.some(a => (a.E_mail || '').toLowerCase() === email)) {
+        return res.status(400).json({
+            success: false,
+            error: 'An account with this email address already exists. Please use a different email.'
+        });
+    }
+
+    // Auto-generate or validate unique student ID
+    if (!student_id) {
+        student_id = generateUniqueStudentId(stdRows);
+    } else {
+        if (stdRows.some(s => (s.Student_ID || '').toLowerCase() === student_id.toLowerCase())) {
+            return res.status(400).json({
+                success: false,
+                error: `Student ID "${student_id}" is already registered. Please choose a different ID or leave blank to auto-generate.`
+            });
+        }
+    }
+
     stdRows.push({
         Student_ID: student_id,
         First_name: first_name,
@@ -1408,7 +1572,8 @@ app.post('/api/admin/students', requireAuth('admin'), (req, res) => {
 
     res.json({
         success: true,
-        message: `Student ${first_name} ${last_name || ''} registered. Default password: student123`
+        student_id,
+        message: `Student ${first_name} ${last_name || ''} registered with ID ${student_id}. Default password: student123`
     });
 });
 

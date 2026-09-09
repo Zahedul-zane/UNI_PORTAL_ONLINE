@@ -29,8 +29,9 @@
                         <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px;">🎓 Register New Student</h3>
                         <form id="student-form" onsubmit="saveStudent(event)">
                             <div class="form-group">
-                                <label for="std-id">Student ID</label>
-                                <input type="text" id="std-id" class="form-control" placeholder="e.g. 2023-3-60-625" required>
+                                <label for="std-id">Student ID (Optional)</label>
+                                <input type="text" id="std-id" class="form-control" placeholder="e.g. 2026-3-60-625 (Leave blank to auto-generate)">
+                                <div class="helper-text" style="font-size:0.78rem; color:#64748b; margin-top:3px;">💡 Auto-assigned next unique sequential Student ID if left blank.</div>
                             </div>
                             <div style="display:flex; gap:10px;">
                                 <div class="form-group" style="flex:1;">
