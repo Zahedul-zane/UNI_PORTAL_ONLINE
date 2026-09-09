@@ -145,6 +145,7 @@
                         <label for="faculty_id">Faculty Initial / ID (Optional)</label>
                         <input type="text" id="faculty_id" name="faculty_id" class="form-control" placeholder="e.g. AHN, MRI (Leave blank to auto-generate from name)" maxlength="8" style="text-transform: uppercase;">
                         <div class="helper-text">💡 If left blank, a unique short-form code is automatically generated from your name (e.g. AHN).</div>
+                        <div id="faculty-initial-preview" style="display:none; font-size: 0.84rem; margin-top: 6px; color: #0284c7; background: #f0f9ff; padding: 6px 12px; border-radius: 6px; border: 1px dashed #7dd3fc;"></div>
                     </div>
                 </div>
 
@@ -152,11 +153,18 @@
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label for="password">Create Password *</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+                        <div style="position: relative;">
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required style="padding-right: 42px;" oninput="validatePasswords()">
+                            <button type="button" onclick="togglePasswordVisibility('password', this)" title="Show/Hide Password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.05rem; line-height: 1; padding: 4px;">👁️</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="confirm_password">Confirm Password *</label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Repeat your password" minlength="6" required>
+                        <div style="position: relative;">
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Repeat your password" minlength="6" required style="padding-right: 42px;" oninput="validatePasswords()">
+                            <button type="button" onclick="togglePasswordVisibility('confirm_password', this)" title="Show/Hide Password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.05rem; line-height: 1; padding: 4px;">👁️</button>
+                        </div>
+                        <div id="password-match-hint" class="helper-text" style="min-height: 18px; margin-top: 4px;"></div>
                     </div>
                 </div>
 
@@ -219,13 +227,98 @@
                 facultyFields.style.display = 'block';
                 document.getElementById('email').placeholder = 'name@ewubd.edu';
             }
+            updateFacultyInitialPreview();
+        }
+        function updateFacultyInitialPreview() {
+            const previewEl = document.getElementById('faculty-initial-preview');
+            if (!previewEl) return;
+            if (currentRole !== 'faculty') {
+                previewEl.style.display = 'none';
+                return;
+            }
+            const customVal = document.getElementById('faculty_id').value.trim();
+            if (customVal) {
+                previewEl.style.display = 'block';
+                previewEl.innerHTML = `Custom Initial: <strong style="font-family:monospace; color:#0f2b48; background:#e0f2fe; padding:1px 6px; border-radius:4px;">${customVal.toUpperCase()}</strong>`;
+                return;
+            }
+            const fname = document.getElementById('first_name').value.trim();
+            const lname = document.getElementById('last_name').value.trim();
+            if (!fname && !lname) {
+                previewEl.style.display = 'none';
+                return;
+            }
+
+            const cleanTitles = (str) => str.replace(/\b(dr|prof|professor|mr|mrs|ms|engr|adv|md|mohammad|muhammad)\.?\b/gi, '').trim();
+            let cFirst = cleanTitles(fname) || fname;
+            let cLast = cleanTitles(lname) || lname;
+            const words = `${cFirst} ${cLast}`.replace(/[^a-zA-Z\s]/g, ' ').split(/\s+/).filter(w => w.length > 0);
+            let code = 'FAC';
+            if (words.length >= 3) {
+                code = words.slice(0, 3).map(w => w[0].toUpperCase()).join('');
+            } else if (words.length === 2) {
+                const w1 = words[0].toUpperCase(), w2 = words[1].toUpperCase();
+                code = w2.length >= 2 ? `${w1[0]}${w2[0]}${w2[w2.length - 1]}` : `${w1[0]}${w2[0]}`;
+            } else if (words.length === 1) {
+                code = words[0].substring(0, 3).toUpperCase();
+            }
+
+            previewEl.style.display = 'block';
+            previewEl.innerHTML = `Auto Initial Preview: <strong style="font-family:monospace; color:#0f2b48; background:#e0f2fe; padding:1px 6px; border-radius:4px; border:1px solid #bae6fd;">${code}</strong>`;
+        }
+
+        document.getElementById('first_name').addEventListener('input', updateFacultyInitialPreview);
+        document.getElementById('last_name').addEventListener('input', updateFacultyInitialPreview);
+        document.getElementById('faculty_id').addEventListener('input', updateFacultyInitialPreview);
+
+        function togglePasswordVisibility(id, btn) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = '🙈';
+            } else {
+                input.type = 'password';
+                btn.innerText = '👁️';
+            }
+        }
+
+        function validatePasswords() {
+            const p1 = document.getElementById('password').value;
+            const p2 = document.getElementById('confirm_password').value;
+            const hint = document.getElementById('password-match-hint');
+            if (!hint) return;
+
+            if (!p2) {
+                hint.innerHTML = p1.length > 0 && p1.length < 6 ? '<span style="color:#e11d48;">Password must be at least 6 characters</span>' : '';
+                return;
+            }
+
+            if (p1 === p2) {
+                hint.innerHTML = '<span style="color:#16a34a; font-weight:600;">✓ Passwords match perfectly</span>';
+            } else {
+                hint.innerHTML = '<span style="color:#e11d48; font-weight:600;">⚠️ Passwords do not match</span>';
+            }
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '✓ Copied!';
+                btn.style.background = '#dcfce7';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(() => {
+                alert('ID: ' + text);
+            });
         }
 
         // Fetch dynamic departments list from database
         async function loadDepartments() {
             try {
-                const res = await fetch('/api/departments');
-                const data = await res.json();
+                const data = await App.get('/departments');
                 if (data.success && Array.isArray(data.departments) && data.departments.length > 0) {
                     const select = document.getElementById('dept_id');
                     select.innerHTML = data.departments.map(d => 
@@ -259,11 +352,12 @@
 
             const payload = {
                 role: currentRole,
+                selected_role: currentRole,
                 first_name: document.getElementById('first_name').value.trim(),
                 last_name: document.getElementById('last_name').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
-                dept_id: document.getElementById('dept_id').value,
+                dept_id: document.getElementById('dept_id').value || '101',
                 password: password
             };
 
@@ -304,13 +398,18 @@
                                 <span>🎉</span> <span>Registration Successful!</span>
                             </div>
                             <div style="background: rgba(255,255,255,0.92); border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; color: #1e293b;">
-                                <div style="font-size: 0.92rem; margin-bottom: 4px;">
-                                    Official <strong>${roleName}:</strong> 
-                                    <span style="font-family: monospace; font-size: 1.15rem; font-weight: 800; color: #0f2b48; background: #e0f2fe; padding: 2px 8px; border-radius: 4px; border: 1px solid #bae6fd;">
-                                        ${assignedId}
-                                    </span>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                    <div style="font-size: 0.95rem;">
+                                        Official <strong>${roleName}:</strong> 
+                                        <span style="font-family: monospace; font-size: 1.2rem; font-weight: 800; color: #0f2b48; background: #e0f2fe; padding: 2px 10px; border-radius: 6px; border: 1px solid #bae6fd; letter-spacing: 0.5px;">
+                                            ${assignedId}
+                                        </span>
+                                    </div>
+                                    <button type="button" onclick="copyToClipboard('${assignedId}', this)" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 6px;">
+                                        📋 Copy ID
+                                    </button>
                                 </div>
-                                <div style="font-size: 0.88rem; color: #475569;">
+                                <div style="font-size: 0.88rem; color: #475569; margin-top: 6px;">
                                     Registered Email: <strong>${res.email}</strong>
                                 </div>
                                 <div style="font-size: 0.82rem; color: #15803d; margin-top: 6px;">

@@ -37,7 +37,10 @@
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+                    <div style="position: relative;">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required style="padding-right: 42px;">
+                        <button type="button" onclick="togglePasswordVisibility('password', this)" title="Show/Hide Password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.05rem; line-height: 1; padding: 4px;">👁️</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary" id="login-btn">
@@ -63,6 +66,18 @@
     <script>
         if (window.location.protocol === 'file:') {
             window.location.href = 'http://localhost:8000/login.html';
+        }
+
+        function togglePasswordVisibility(id, btn) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = '🙈';
+            } else {
+                input.type = 'password';
+                btn.innerText = '👁️';
+            }
         }
 
         let currentRole = 'student';

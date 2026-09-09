@@ -46,13 +46,27 @@ function verifySessionToken(token) {
     }
 }
 
+// CORS Middleware for seamless local development, multi-port, and production access
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cookie');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 // Request URL Normalization for Netlify Functions & Serverless
 app.use((req, res, next) => {
     if (req.url.startsWith('/.netlify/functions/api')) {
         req.url = req.url.replace('/.netlify/functions/api', '/api');
-    }
-    if (!req.url.startsWith('/api') && !req.url.startsWith('/assets') && !req.url.startsWith('/images') && !req.url.endsWith('.html')) {
-        req.url = '/api' + (req.url.startsWith('/') ? req.url : '/' + req.url);
     }
     next();
 });
@@ -404,6 +418,36 @@ app.post('/api/register', (req, res) => {
             engine.saveTable('student_phonenum');
         }
 
+        // Setup default Summer 2026 approved pre-advising for new admission
+        const preAdvRows = engine.tables['pre_advising']?.rows || [];
+        const incRows = engine.tables['includedcourse']?.rows || [];
+        const paId = engine.getNextId('pre_advising', 'Pre_Advising_ID');
+        const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+        preAdvRows.push({
+            Pre_Advising_ID: String(paId),
+            Submission_TimeStamp: nowStr,
+            Semester: 'Summer',
+            Year: '2026',
+            Student_ID: studentId
+        });
+
+        // Add foundation courses for their department that have scheduled sections in Summer 2026
+        const sectionCourses = new Set((engine.tables['section']?.rows || []).map(s => s.Course_ID));
+        const deptCourses = (engine.tables['course']?.rows || []).filter(c => 
+            sectionCourses.has(c.Course_ID) && (c.Dept_ID === deptId || !c.Dept_ID)
+        );
+        const selectedCourses = deptCourses.length > 0 ? deptCourses.slice(0, 4) : (engine.tables['course']?.rows || []).filter(c => sectionCourses.has(c.Course_ID)).slice(0, 4);
+        for (const c of selectedCourses) {
+            incRows.push({
+                Pre_Advising_ID: String(paId),
+                Course_ID: c.Course_ID,
+                Status: 'Approved'
+            });
+        }
+        engine.saveTable('pre_advising');
+        engine.saveTable('includedcourse');
+
         engine.saveTable('student');
         engine.generateMasterFiles();
 
@@ -751,7 +795,7 @@ app.post('/api/student/pre-advising', requireAuth('student'), (req, res) => {
             engine.tables['includedcourse'].rows.push({
                 Pre_Advising_ID: String(paId),
                 Course_ID: cid,
-                Status: 'Pending'
+                Status: 'Approved' // Auto-approved during open advising registration
             });
         }
     }
@@ -762,7 +806,7 @@ app.post('/api/student/pre-advising', requireAuth('student'), (req, res) => {
 
     res.json({
         success: true,
-        message: `Pre-advising form #${paId} submitted successfully.`
+        message: `Pre-advising form #${paId} submitted and approved! You can now take class sections.`
     });
 });
 
@@ -775,15 +819,26 @@ app.get('/api/student/advising-courses', requireAuth('student'), (req, res) => {
     const enrRows = engine.tables['enrollment']?.rows || [];
 
     // Find approved course IDs for this student in Summer 2026
-    const approvedCids = [];
+    let approvedCids = [];
     for (const pa of preAdvRows) {
         if (pa.Student_ID === req.userId && pa.Semester === 'Summer' && String(pa.Year) === '2026') {
             for (const inc of incRows) {
-                if (String(inc.Pre_Advising_ID) === String(pa.Pre_Advising_ID) && inc.Status === 'Approved') {
+                if (String(inc.Pre_Advising_ID) === String(pa.Pre_Advising_ID) && (inc.Status === 'Approved' || inc.Status === 'Pending')) {
                     if (!approvedCids.includes(inc.Course_ID)) {
                         approvedCids.push(inc.Course_ID);
                     }
                 }
+            }
+        }
+    }
+
+    // Open Advising Fallback: If student has no courses listed yet,
+    // make all scheduled Summer 2026 course sections available for enrollment
+    if (approvedCids.length === 0) {
+        const offeredCourseSet = new Set(sectionRows.map(s => s.Course_ID));
+        for (const c of courseRows) {
+            if (offeredCourseSet.has(c.Course_ID)) {
+                approvedCids.push(c.Course_ID);
             }
         }
     }

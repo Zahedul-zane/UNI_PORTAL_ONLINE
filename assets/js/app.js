@@ -2,7 +2,19 @@
  * East West University Portal - Core Frontend Application Framework
  */
 
-const API_BASE = '/api';
+// Automatically resolve backend API endpoint whether accessed via port 8000, Live Server (5500), or file://
+const API_BASE = (function() {
+    if (typeof window === 'undefined') return '/api';
+    const host = window.location.hostname || 'localhost';
+    if (window.location.protocol === 'file:') {
+        return `http://${host}:8000/api`;
+    }
+    // If running via Live Server (ports starting with 55) or static preview, connect to backend port 8000
+    if (window.location.port && (window.location.port.startsWith('55') || window.location.port === '5000')) {
+        return `http://${host}:8000/api`;
+    }
+    return '/api';
+})();
 
 const App = {
     user: null,
@@ -12,7 +24,8 @@ const App = {
             const token = localStorage.getItem('ewu_token');
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
             const res = await fetch(`${API_BASE}/me`, { headers, credentials: 'include' });
-            const data = await res.json();
+            let data = {};
+            try { data = await res.json(); } catch(e) { data = { logged_in: false }; }
             if (data.logged_in) {
                 this.user = data;
                 this.renderLayout();
@@ -58,7 +71,12 @@ const App = {
             options.body = JSON.stringify(options.body);
         }
         const res = await fetch(`${API_BASE}${endpoint}`, options);
-        const data = await res.json();
+        let data = {};
+        try {
+            data = await res.json();
+        } catch (e) {
+            data = { success: false, error: res.statusText || 'Server communication error' };
+        }
         if (!res.ok && !data.success) {
             throw new Error(data.error || 'Request failed');
         }

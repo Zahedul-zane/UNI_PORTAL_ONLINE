@@ -3,44 +3,1281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>East West University Portal</title>
+    <title>East West University - Academic Management Portal</title>
+    <meta name="description" content="Official East West University Academic Portal. Complete online admission, course advising, grade tracking, faculty management, and registrar services.">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <script>
         if (window.location.protocol === 'file:') {
-            window.location.href = 'http://localhost:8000';
-        } else {
-            const token = localStorage.getItem('ewu_token');
-            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-            fetch('/api/me', { headers, credentials: 'include' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.logged_in) {
-                        window.location.href = `/${data.role}/dashboard.html`;
-                    } else {
-                        window.location.href = '/login.html';
-                    }
-                })
-                .catch(() => {
-                    window.location.href = '/login.html';
-                });
+            window.location.href = 'http://localhost:8000/index.html';
         }
     </script>
-</head>
-<body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; background: #0f172a; color: white;">
-    <div style="text-align: center; max-width: 500px; padding: 20px;">
-        <h2>Loading East West University Portal...</h2>
-        <noscript>
-            <p style="color: #ef4444;">JavaScript is required to run this application.</p>
-        </noscript>
-        <div id="file-protocol-warning" style="display: none; margin-top: 20px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 15px;">
-            <p style="margin: 0 0 10px 0;">⚠️ It looks like you opened this file directly from your disk.</p>
-            <p style="margin: 0 0 10px 0;">Please run <strong>start.bat</strong> and access the portal at:</p>
-            <a href="http://localhost:8000" style="color: #38bdf8; text-decoration: underline; font-weight: bold;">http://localhost:8000</a>
-        </div>
-        <script>
-            if (window.location.protocol === 'file:') {
-                document.getElementById('file-protocol-warning').style.display = 'block';
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ewu-blue: #0f2b48;
+            --ewu-navy-dark: #071728;
+            --ewu-gold: #f59e0b;
+            --ewu-gold-hover: #d97706;
+            --ewu-crimson: #c41230;
+            --ewu-bg-card: rgba(255, 255, 255, 0.88);
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ─── TOP NAVBAR ─── */
+        .portal-navbar {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(15, 43, 72, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 12px 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .brand-logo-img {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .brand-titles h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--ewu-blue);
+            margin: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .brand-titles span {
+            font-size: 0.78rem;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .nav-links-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link-item {
+            color: #334155;
+            font-weight: 600;
+            font-size: 0.92rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link-item:hover {
+            color: var(--ewu-gold-hover);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-portal-outline {
+            padding: 9px 18px;
+            border-radius: 12px;
+            border: 1.5px solid var(--ewu-blue);
+            color: var(--ewu-blue);
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-portal-outline:hover {
+            background: rgba(15, 43, 72, 0.05);
+            color: var(--ewu-blue);
+            transform: translateY(-1px);
+        }
+
+        .btn-portal-primary {
+            padding: 9px 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0f2b48 0%, #1e4976 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(15, 43, 72, 0.25);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+        }
+
+        .btn-portal-primary:hover {
+            background: linear-gradient(135deg, #183d63 0%, #25588c 100%);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(15, 43, 72, 0.35);
+        }
+
+        /* ─── HERO SECTION ─── */
+        .portal-hero {
+            position: relative;
+            background: linear-gradient(135deg, rgba(7, 23, 40, 0.92) 0%, rgba(15, 43, 72, 0.85) 100%), url('/images/OUTSIDE.jpg') center/cover no-repeat;
+            color: #ffffff;
+            padding: 60px 24px 80px;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (max-width: 960px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
             }
-        </script>
-    </div>
+            .nav-links-menu {
+                display: none;
+            }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 158, 11, 0.18);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-bottom: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.15;
+            color: #ffffff;
+            margin-bottom: 18px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-lead {
+            font-size: 1.05rem;
+            line-height: 1.65;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+            max-width: 580px;
+        }
+
+        .hero-stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 36px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding-top: 24px;
+        }
+
+        @media (max-width: 640px) {
+            .hero-stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        .hero-stat-item h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fbbf24;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .hero-stat-item p {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            margin: 4px 0 0;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* ─── INTERACTIVE FAST GATEWAY CARD ─── */
+        .gateway-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            color: #1e293b;
+        }
+
+        .gateway-tabs {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            gap: 4px;
+        }
+
+        .gateway-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .gateway-tab.active {
+            background: #ffffff;
+            color: var(--ewu-blue);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .form-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fast-form-group {
+            margin-bottom: 12px;
+        }
+
+        .fast-form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+
+        .fast-form-control {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: #1e293b;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .fast-form-control:focus {
+            outline: none;
+            border-color: var(--ewu-blue);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(15, 43, 72, 0.12);
+        }
+
+        /* ─── ROLE GATEWAYS SECTION ─── */
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 70px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        .section-tag {
+            color: var(--ewu-gold-hover);
+            font-weight: 700;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--ewu-blue);
+            letter-spacing: -0.02em;
+            margin: 0 0 12px;
+        }
+
+        .section-subtitle {
+            font-size: 0.98rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .gateways-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        @media (max-width: 900px) {
+            .gateways-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .portal-role-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 32px 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-role-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 45px rgba(15, 43, 72, 0.12);
+            border-color: rgba(15, 43, 72, 0.25);
+        }
+
+        .portal-role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--ewu-blue), var(--ewu-gold));
+        }
+
+        .role-icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .role-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--ewu-blue);
+            margin: 0 0 10px;
+        }
+
+        .role-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.55;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .role-feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px;
+        }
+
+        .role-feature-list li {
+            font-size: 0.84rem;
+            color: #334155;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: 800;
+        }
+
+        /* ─── DEPARTMENTS SECTION ─── */
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 960px) {
+            .departments-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .departments-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dept-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .dept-card:hover {
+            border-color: var(--ewu-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .dept-code {
+            font-family: monospace;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: var(--ewu-blue);
+            background: #e0f2fe;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .dept-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 8px;
+        }
+
+        .dept-info {
+            font-size: 0.82rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* ─── FOOTER ─── */
+        .portal-footer {
+            background: var(--ewu-navy-dark);
+            color: #94a3b8;
+            padding: 50px 24px 30px;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 36px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer-col h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 16px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.86rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: #fbbf24;
+        }
+
+        .server-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── TOP NAVIGATION BAR ─── -->
+    <header class="portal-navbar">
+        <div class="navbar-container">
+            <a href="/" class="brand-logo-wrap">
+                <img src="/images/EWU_LOGO.png" alt="East West University Logo" class="brand-logo-img">
+                <div class="brand-titles">
+                    <h1>East West University</h1>
+                    <span>Academic Management Portal</span>
+                </div>
+            </a>
+
+            <nav class="nav-links-menu">
+                <a href="#gateways" class="nav-link-item">🏛️ Portals</a>
+                <a href="#departments" class="nav-link-item">🏢 Departments</a>
+                <a href="#notices" class="nav-link-item">📋 Academic Notices</a>
+                <div class="server-status-pill" id="nav-server-status">
+                    <span class="status-dot"></span>
+                    <span>Node.js &amp; Excel Engine Online</span>
+                </div>
+            </nav>
+
+            <div class="nav-actions" id="user-nav-actions">
+                <a href="/login.html" class="btn-portal-outline">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    Sign In
+                </a>
+                <a href="/register.html" class="btn-portal-primary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                    Register
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ─── HERO & INSTANT REGISTRATION STATION ─── -->
+    <section class="portal-hero">
+        <div class="hero-container">
+            <div>
+                <div class="hero-badge">
+                    <span>✨</span>
+                    <span>Summer 2026 Academic Registration Live</span>
+                </div>
+                <h2 class="hero-title">
+                    Excellence in <span>Education &amp; Innovation</span>
+                </h2>
+                <p class="hero-lead">
+                    Welcome to the East West University Integrated Academic Portal. Access seamless student course advising, real-time CGPA tracking, faculty academic rosters, and institutional administration powered by our high-performance Node.js Excel database engine.
+                </p>
+
+                <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                    <a href="/register.html?role=student" class="btn-portal-primary" style="padding: 12px 24px; font-size: 0.95rem;">
+                        🎓 Student Admission Register &rarr;
+                    </a>
+                    <a href="/register.html?role=faculty" class="btn-portal-outline" style="padding: 12px 22px; font-size: 0.95rem; border-color: rgba(255,255,255,0.7); color: #ffffff;">
+                        👨‍🏫 Faculty Member Register
+                    </a>
+                </div>
+
+                <div class="hero-stats-row">
+                    <div class="hero-stat-item">
+                        <h3>12,000+</h3>
+                        <p>Enrolled Students</p>
+                    </div>
+                    <div class="hero-stat-item">
+                        <h3>450+</h3>
+                        <p>Renowned Faculty</p>
+                    </div>
+                    <div class="hero-stat-item">
+                        <h3>4</h3>
+                        <p>Premier Depts</p>
+                    </div>
+                    <div class="hero-stat-item">
+                        <h3>100%</h3>
+                        <p>Excel DB Sync</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast Interactive Gateway Card -->
+            <div>
+                <div class="gateway-card">
+                    <div class="gateway-tabs">
+                        <button type="button" class="gateway-tab active" id="tab-fast-student" onclick="switchFastTab('student')">
+                            🎓 Student
+                        </button>
+                        <button type="button" class="gateway-tab" id="tab-fast-faculty" onclick="switchFastTab('faculty')">
+                            👨‍🏫 Faculty
+                        </button>
+                        <button type="button" class="gateway-tab" id="tab-fast-login" onclick="switchFastTab('login')">
+                            🔐 Sign In
+                        </button>
+                    </div>
+
+                    <!-- Fast Student Admission Form -->
+                    <form id="fast-student-form" onsubmit="handleFastRegister(event, 'student')">
+                        <div id="fast-student-alert" style="display:none; margin-bottom:12px;"></div>
+
+                        <div class="form-grid-2">
+                            <div class="fast-form-group">
+                                <label for="fast_std_fname">First Name *</label>
+                                <input type="text" id="fast_std_fname" class="fast-form-control" placeholder="e.g. Tanvir" required>
+                            </div>
+                            <div class="fast-form-group">
+                                <label for="fast_std_lname">Last Name</label>
+                                <input type="text" id="fast_std_lname" class="fast-form-control" placeholder="e.g. Ahmed">
+                            </div>
+                        </div>
+
+                        <div class="fast-form-group">
+                            <label for="fast_std_email">Email Address *</label>
+                            <input type="email" id="fast_std_email" class="fast-form-control" placeholder="name@std.ewubd.edu" required>
+                        </div>
+
+                        <div class="fast-form-group">
+                            <label for="fast_std_dept">Department *</label>
+                            <select id="fast_std_dept" class="fast-form-control" required>
+                                <option value="101">Computer Science &amp; Engineering (CSE)</option>
+                                <option value="102">Electrical &amp; Electronic Engineering (EEE)</option>
+                                <option value="103">Business Administration (BBA)</option>
+                                <option value="104">Pharmacy (PHRM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="fast-form-group">
+                                <label for="fast_std_pass">Create Password *</label>
+                                <input type="password" id="fast_std_pass" class="fast-form-control" placeholder="Min 6 characters" minlength="6" required>
+                            </div>
+                            <div class="fast-form-group">
+                                <label for="fast_std_phone">Phone (Optional)</label>
+                                <input type="tel" id="fast_std_phone" class="fast-form-control" placeholder="+880 17...">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-portal-primary" id="fast-std-btn" style="width: 100%; justify-content: center; padding: 11px; margin-top: 6px;">
+                            Register Student &amp; Get Official ID
+                        </button>
+                        <div style="font-size: 0.76rem; color: #64748b; text-align: center; margin-top: 8px;">
+                            💡 Official unique Student ID (e.g. 2026-3-60-XXX) assigned automatically.
+                        </div>
+                    </form>
+
+                    <!-- Fast Faculty Form -->
+                    <form id="fast-faculty-form" onsubmit="handleFastRegister(event, 'faculty')" style="display:none;">
+                        <div id="fast-fac-alert" style="display:none; margin-bottom:12px;"></div>
+
+                        <div class="form-grid-2">
+                            <div class="fast-form-group">
+                                <label for="fast_fac_fname">First Name *</label>
+                                <input type="text" id="fast_fac_fname" class="fast-form-control" placeholder="Dr. Ahmed" required oninput="updateFastFacInitial()">
+                            </div>
+                            <div class="fast-form-group">
+                                <label for="fast_fac_lname">Last Name</label>
+                                <input type="text" id="fast_fac_lname" class="fast-form-control" placeholder="Hasan" oninput="updateFastFacInitial()">
+                            </div>
+                        </div>
+
+                        <div class="fast-form-group">
+                            <label for="fast_fac_email">Institutional Email *</label>
+                            <input type="email" id="fast_fac_email" class="fast-form-control" placeholder="ahmed.hasan@ewubd.edu" required>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="fast-form-group">
+                                <label for="fast_fac_desig">Designation</label>
+                                <select id="fast_fac_desig" class="fast-form-control">
+                                    <option value="Lecturer">Lecturer</option>
+                                    <option value="Assistant Professor">Assistant Professor</option>
+                                    <option value="Associate Professor">Associate Professor</option>
+                                    <option value="Professor">Professor</option>
+                                </select>
+                            </div>
+                            <div class="fast-form-group">
+                                <label for="fast_fac_dept">Department</label>
+                                <select id="fast_fac_dept" class="fast-form-control" required>
+                                    <option value="101">Computer Science &amp; Engineering (CSE)</option>
+                                    <option value="102">Electrical &amp; Electronic Engineering (EEE)</option>
+                                    <option value="103">Business Administration (BBA)</option>
+                                    <option value="104">Pharmacy (PHRM)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="fast-form-group">
+                                <label for="fast_fac_pass">Password *</label>
+                                <input type="password" id="fast_fac_pass" class="fast-form-control" placeholder="Min 6 characters" minlength="6" required>
+                            </div>
+                            <div class="fast-form-group">
+                                <label for="fast_fac_custom_id">Initial (Optional)</label>
+                                <input type="text" id="fast_fac_custom_id" class="fast-form-control" placeholder="e.g. AHN" maxlength="8" style="text-transform: uppercase;">
+                            </div>
+                        </div>
+
+                        <div id="fast-fac-initial-preview" style="display:none; font-size:0.82rem; color:#0369a1; background:#e0f2fe; padding:6px 12px; border-radius:6px; margin-bottom:10px;"></div>
+
+                        <button type="submit" class="btn-portal-primary" id="fast-fac-btn" style="width: 100%; justify-content: center; padding: 11px;">
+                            Register Faculty &amp; Generate Short Initial
+                        </button>
+                    </form>
+
+                    <!-- Fast Sign In Form -->
+                    <form id="fast-login-form" onsubmit="handleFastLogin(event)" style="display:none;">
+                        <div id="fast-login-alert" style="display:none; margin-bottom:12px;"></div>
+
+                        <div class="fast-form-group">
+                            <label for="fast_login_role">Select Your Role</label>
+                            <select id="fast_login_role" class="fast-form-control" onchange="updateFastLoginPlaceholder()">
+                                <option value="student">🎓 Student</option>
+                                <option value="faculty">👨‍🏫 Faculty Member</option>
+                                <option value="admin">🛡️ Administrator</option>
+                            </select>
+                        </div>
+
+                        <div class="fast-form-group">
+                            <label id="fast_login_id_label" for="fast_login_id">Student ID or Email</label>
+                            <input type="text" id="fast_login_id" class="fast-form-control" placeholder="e.g. 2023-3-60-621 or name@std.ewubd.edu" required>
+                        </div>
+
+                        <div class="fast-form-group">
+                            <label for="fast_login_pass">Password</label>
+                            <input type="password" id="fast_login_pass" class="fast-form-control" placeholder="Enter password" required>
+                        </div>
+
+                        <button type="submit" class="btn-portal-primary" id="fast-login-btn" style="width: 100%; justify-content: center; padding: 11px; margin-top: 8px;">
+                            Sign In to Portal
+                        </button>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <a href="/login.html" style="font-size: 0.82rem; color: #475569; text-decoration: underline;">
+                                Open Full-Page Sign In &rarr;
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── ROLE GATEWAYS SECTION ─── -->
+    <section class="section-container" id="gateways">
+        <div class="section-header">
+            <span class="section-tag">Academic Gateways</span>
+            <h2 class="section-title">Dedicated Portals for Every Member</h2>
+            <p class="section-subtitle">Streamlined tools and dashboards tailored specifically for students, academic advisors, and administrative personnel.</p>
+        </div>
+
+        <div class="gateways-grid">
+            <!-- Student Gateway -->
+            <div class="portal-role-card">
+                <div class="role-icon-box" style="background:#eff6ff; color:#2563eb;">🎓</div>
+                <h3 class="role-title">Student Portal</h3>
+                <p class="role-desc">Complete academic freedom and visibility from admission through graduation with real-time course advising.</p>
+                <ul class="role-feature-list">
+                    <li>Summer 2026 Course Advising &amp; Section Taking</li>
+                    <li>Cumulative Grade Point Average (CGPA) Tracking</li>
+                    <li>Official Faculty Advisor Consultation</li>
+                    <li>Semester Tuition Invoices &amp; Payment Ledger</li>
+                </ul>
+                <div style="display:flex; gap:8px;">
+                    <a href="/student/dashboard.html" class="btn-portal-primary" style="flex:1; justify-content:center;">Enter Student Portal</a>
+                    <a href="/register.html?role=student" class="btn-portal-outline" style="padding:9px 12px;" title="Register as Student">+ Register</a>
+                </div>
+            </div>
+
+            <!-- Faculty Gateway -->
+            <div class="portal-role-card">
+                <div class="role-icon-box" style="background:#fef3c7; color:#d97706;">👨‍🏫</div>
+                <h3 class="role-title">Faculty Portal</h3>
+                <p class="role-desc">Empowering instructors with unique short-code initials, section rosters, and instant grade management.</p>
+                <ul class="role-feature-list">
+                    <li>Unique Short-Form Name Initials (e.g. AHN, MRI)</li>
+                    <li>Course Section Rosters &amp; Class Schedules</li>
+                    <li>Student Pre-Advising Requests &amp; Approvals</li>
+                    <li>Classroom Allocation &amp; Exam Room Monitoring</li>
+                </ul>
+                <div style="display:flex; gap:8px;">
+                    <a href="/faculty/dashboard.html" class="btn-portal-primary" style="flex:1; justify-content:center;">Enter Faculty Portal</a>
+                    <a href="/register.html?role=faculty" class="btn-portal-outline" style="padding:9px 12px;" title="Register as Faculty">+ Register</a>
+                </div>
+            </div>
+
+            <!-- Admin Gateway -->
+            <div class="portal-role-card">
+                <div class="role-icon-box" style="background:#f3e8ff; color:#7e22ce;">🛡️</div>
+                <h3 class="role-title">Office of Registrar</h3>
+                <p class="role-desc">Central institutional management for departments, curriculum, section allocations, and Excel file databases.</p>
+                <ul class="role-feature-list">
+                    <li>Comprehensive Student &amp; Faculty Master Directory</li>
+                    <li>100% Native Excel Spreadsheets Synchronization</li>
+                    <li>Course Prerequisite Validation Engine</li>
+                    <li>Automatic Backup to .xlsx, .xml and .csv</li>
+                </ul>
+                <a href="/admin/dashboard.html" class="btn-portal-primary" style="width:100%; justify-content:center;">Enter Registrar Portal</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── DEPARTMENTS SECTION ─── -->
+    <section class="section-container" id="departments" style="background:#ffffff; border-top:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0;">
+        <div class="section-header">
+            <span class="section-tag">Academic Excellence</span>
+            <h2 class="section-title">Undergraduate &amp; Graduate Departments</h2>
+            <p class="section-subtitle">Accredited degree programs preparing innovators, engineers, business executives, and medical scientists.</p>
+        </div>
+
+        <div class="departments-grid">
+            <div class="dept-card">
+                <span class="dept-code">DEPT 101</span>
+                <h3 class="dept-name">Computer Science &amp; Engineering</h3>
+                <p class="dept-info">Artificial Intelligence, Software Architecture, Cybersecurity, Algorithms, and Cloud Systems.</p>
+            </div>
+            <div class="dept-card">
+                <span class="dept-code">DEPT 102</span>
+                <h3 class="dept-name">Electrical &amp; Electronic Engr.</h3>
+                <p class="dept-info">Telecommunications, Embedded Systems, Renewable Power Grid, Microelectronics, and Robotics.</p>
+            </div>
+            <div class="dept-card">
+                <span class="dept-code">DEPT 103</span>
+                <h3 class="dept-name">Business Administration</h3>
+                <p class="dept-info">Finance, Strategic Management, Marketing Analytics, Human Resource Management, and Fintech.</p>
+            </div>
+            <div class="dept-card">
+                <span class="dept-code">DEPT 104</span>
+                <h3 class="dept-name">Department of Pharmacy</h3>
+                <p class="dept-info">Clinical Pharmacology, Biopharmaceutics, Drug Discovery, Toxicological Evaluation, and Hospital Care.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── ACADEMIC NOTICES SECTION ─── -->
+    <section class="section-container" id="notices">
+        <div class="section-header">
+            <span class="section-tag">Official Announcements</span>
+            <h2 class="section-title">Summer 2026 Academic Notices</h2>
+            <p class="section-subtitle">Stay up to date with the latest deadlines, schedules, and administrative circulars.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div style="background:#ffffff; padding:24px; border-radius:16px; border:1px solid #e2e8f0; border-left:4px solid #10b981;">
+                <span style="font-size:0.75rem; color:#10b981; font-weight:700; text-transform:uppercase;">Registration Open</span>
+                <h4 style="font-family:'Outfit'; font-size:1.05rem; margin:8px 0 6px; color:#0f172a;">Summer 2026 Pre-Advising</h4>
+                <p style="font-size:0.84rem; color:#64748b; margin:0; line-height:1.5;">All students must consult their assigned faculty advisor to complete section selection before the add/drop deadline.</p>
+            </div>
+            <div style="background:#ffffff; padding:24px; border-radius:16px; border:1px solid #e2e8f0; border-left:4px solid #f59e0b;">
+                <span style="font-size:0.75rem; color:#d97706; font-weight:700; text-transform:uppercase;">Admission Circular</span>
+                <h4 style="font-family:'Outfit'; font-size:1.05rem; margin:8px 0 6px; color:#0f172a;">New Student Enrollment</h4>
+                <p style="font-size:0.84rem; color:#64748b; margin:0; line-height:1.5;">Online portal admission is open. Newly admitted students receive immediate official unique IDs with advisor allocation.</p>
+            </div>
+            <div style="background:#ffffff; padding:24px; border-radius:16px; border:1px solid #e2e8f0; border-left:4px solid #3b82f6;">
+                <span style="font-size:0.75rem; color:#2563eb; font-weight:700; text-transform:uppercase;">Faculty Notice</span>
+                <h4 style="font-family:'Outfit'; font-size:1.05rem; margin:8px 0 6px; color:#0f172a;">Faculty Short Initial Standard</h4>
+                <p style="font-size:0.84rem; color:#64748b; margin:0; line-height:1.5;">Official faculty IDs are now standardized into unique 2-3 letter initials generated directly from faculty names (e.g. AHN, MRI).</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── FOOTER ─── -->
+    <footer class="portal-footer">
+        <div class="footer-container">
+            <div>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                    <img src="/images/EWU_LOGO.png" alt="EWU Logo" style="height:44px; filter:brightness(0) invert(1);">
+                    <div>
+                        <h3 style="font-family:'Outfit'; font-size:1.2rem; color:#ffffff; margin:0;">East West University</h3>
+                        <span style="font-size:0.75rem; color:#94a3b8; letter-spacing:0.04em;">Aftabnagar, Rampura, Dhaka-1212</span>
+                    </div>
+                </div>
+                <p style="font-size:0.85rem; line-height:1.6; color:#94a3b8; max-width:320px;">
+                    Committed to providing world-class tertiary education with ethical standards and research innovation.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Academic Portals</h4>
+                <ul class="footer-links">
+                    <li><a href="/student/dashboard.html">Student Academic Dashboard</a></li>
+                    <li><a href="/faculty/dashboard.html">Faculty Academic Gateway</a></li>
+                    <li><a href="/admin/dashboard.html">Registrar &amp; Administrator</a></li>
+                    <li><a href="/register.html">Student Admission &amp; Faculty Registration</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Departments</h4>
+                <ul class="footer-links">
+                    <li><a href="#departments">Computer Science &amp; Engineering</a></li>
+                    <li><a href="#departments">Electrical &amp; Electronic Engineering</a></li>
+                    <li><a href="#departments">Business Administration</a></li>
+                    <li><a href="#departments">Department of Pharmacy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Portal Engine</h4>
+                <ul class="footer-links">
+                    <li><span style="color:#cbd5e1; font-size:0.85rem;">Backend: Node.js / Express</span></li>
+                    <li><span style="color:#cbd5e1; font-size:0.85rem;">Database: 100% Excel Spreadsheets</span></li>
+                    <li><span style="color:#cbd5e1; font-size:0.85rem;">Status: Active Port 8000</span></li>
+                    <li><a href="/login.html">Sign In to Account</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="max-width: 1280px; margin: 24px auto 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:0.82rem;">
+            <div>&copy; 2026 East West University. All Rights Reserved.</div>
+            <div style="color:#64748b;">Designed for Academic Excellence &amp; Digital Innovation.</div>
+        </div>
+    </footer>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        // Check active session on portal load
+        async function checkActiveSession() {
+            try {
+                const token = localStorage.getItem('ewu_token');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const res = await fetch(`${API_BASE}/me`, { headers, credentials: 'include' });
+                const data = await res.json();
+                if (data && data.logged_in) {
+                    const navActions = document.getElementById('user-nav-actions');
+                    if (navActions) {
+                        navActions.innerHTML = `
+                            <span style="font-size:0.85rem; color:#0f2b48; font-weight:600; display:none; @media(min-width:600px){display:inline;}">
+                                👋 ${data.name || 'User'}
+                            </span>
+                            <a href="/${data.role}/dashboard.html" class="btn-portal-primary">
+                                Go to Dashboard &rarr;
+                            </a>
+                            <button onclick="App.logout()" class="btn-portal-outline" style="padding:7px 12px; font-size:0.82rem;">
+                                Logout
+                            </button>
+                        `;
+                    }
+                }
+            } catch (e) {
+                // Not logged in or server starting
+            }
+        }
+        checkActiveSession();
+
+        // Load departments into select dropdowns
+        async function loadDepartments() {
+            try {
+                const data = await App.get('/departments');
+                if (data.success && Array.isArray(data.departments)) {
+                    const opts = data.departments.map(d => `<option value="${d.dept_id}">${d.dept_name}</option>`).join('');
+                    const stdSelect = document.getElementById('fast_std_dept');
+                    const facSelect = document.getElementById('fast_fac_dept');
+                    if (stdSelect) stdSelect.innerHTML = opts;
+                    if (facSelect) facSelect.innerHTML = opts;
+                }
+            } catch (e) {
+                // Fallback default options
+                const fallback = `
+                    <option value="101">Computer Science & Engineering</option>
+                    <option value="102">Electrical & Electronic Engineering</option>
+                    <option value="103">Business Administration</option>
+                    <option value="104">Pharmacy</option>
+                `;
+                const stdSelect = document.getElementById('fast_std_dept');
+                const facSelect = document.getElementById('fast_fac_dept');
+                if (stdSelect) stdSelect.innerHTML = fallback;
+                if (facSelect) facSelect.innerHTML = fallback;
+            }
+        }
+        loadDepartments();
+
+        function switchFastTab(tab) {
+            document.querySelectorAll('.gateway-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-fast-${tab}`).classList.add('active');
+
+            document.getElementById('fast-student-form').style.display = tab === 'student' ? 'block' : 'none';
+            document.getElementById('fast-faculty-form').style.display = tab === 'faculty' ? 'block' : 'none';
+            document.getElementById('fast-login-form').style.display = tab === 'login' ? 'block' : 'none';
+        }
+
+        function updateFastFacInitial() {
+            const fname = document.getElementById('fast_fac_fname').value.trim();
+            const lname = document.getElementById('fast_fac_lname').value.trim();
+            const previewEl = document.getElementById('fast-fac-initial-preview');
+            if (!previewEl) return;
+
+            if (!fname && !lname) {
+                previewEl.style.display = 'none';
+                return;
+            }
+
+            const cleanTitles = (str) => str.replace(/\b(dr|prof|professor|mr|mrs|ms|engr|adv|md|mohammad|muhammad)\.?\b/gi, '').trim();
+            let cFirst = cleanTitles(fname) || fname;
+            let cLast = cleanTitles(lname) || lname;
+            const words = `${cFirst} ${cLast}`.replace(/[^a-zA-Z\s]/g, ' ').split(/\s+/).filter(w => w.length > 0);
+            let code = 'FAC';
+            if (words.length >= 3) {
+                code = words.slice(0, 3).map(w => w[0].toUpperCase()).join('');
+            } else if (words.length === 2) {
+                const w1 = words[0].toUpperCase(), w2 = words[1].toUpperCase();
+                code = w2.length >= 2 ? `${w1[0]}${w2[0]}${w2[w2.length - 1]}` : `${w1[0]}${w2[0]}`;
+            } else if (words.length === 1) {
+                code = words[0].substring(0, 3).toUpperCase();
+            }
+
+            previewEl.style.display = 'block';
+            previewEl.innerHTML = `💡 Auto-generated Initial: <strong style="font-family:monospace; background:#bae6fd; padding:1px 6px; border-radius:4px;">${code}</strong>`;
+        }
+
+        function updateFastLoginPlaceholder() {
+            const role = document.getElementById('fast_login_role').value;
+            const label = document.getElementById('fast_login_id_label');
+            const input = document.getElementById('fast_login_id');
+            if (role === 'student') {
+                label.innerText = 'Student ID or Registered Email';
+                input.placeholder = 'e.g. 2023-3-60-621 or name@std.ewubd.edu';
+            } else if (role === 'faculty') {
+                label.innerText = 'Faculty Initial / ID or Registered Email';
+                input.placeholder = 'e.g. AHN, MRI or name@ewubd.edu';
+            } else {
+                label.innerText = 'Username or Admin Email';
+                input.placeholder = 'admin or admin@ewubd.edu';
+            }
+        }
+
+        async function handleFastRegister(e, role) {
+            e.preventDefault();
+            const btn = document.getElementById(role === 'student' ? 'fast-std-btn' : 'fast-fac-btn');
+            const alertBox = document.getElementById(role === 'student' ? 'fast-student-alert' : 'fast-fac-alert');
+            alertBox.style.display = 'none';
+
+            // Clear any stale local auth tokens before registering
+            localStorage.removeItem('ewu_token');
+            localStorage.removeItem('ewu_role');
+
+            btn.disabled = true;
+            btn.innerHTML = 'Registering Account...';
+
+            let payload = { role, selected_role: role };
+            if (role === 'student') {
+                payload.first_name = document.getElementById('fast_std_fname').value.trim();
+                payload.last_name = document.getElementById('fast_std_lname').value.trim();
+                payload.email = document.getElementById('fast_std_email').value.trim();
+                payload.dept_id = document.getElementById('fast_std_dept').value || '101';
+                payload.password = document.getElementById('fast_std_pass').value;
+                payload.phone = document.getElementById('fast_std_phone').value.trim();
+            } else {
+                payload.first_name = document.getElementById('fast_fac_fname').value.trim();
+                payload.last_name = document.getElementById('fast_fac_lname').value.trim();
+                payload.email = document.getElementById('fast_fac_email').value.trim();
+                payload.designation = document.getElementById('fast_fac_desig').value;
+                payload.dept_id = document.getElementById('fast_fac_dept').value || '101';
+                payload.password = document.getElementById('fast_fac_pass').value;
+                payload.faculty_id = document.getElementById('fast_fac_custom_id').value.trim().toUpperCase();
+            }
+
+            try {
+                const res = await App.post('/register', payload);
+                if (res.success) {
+                    if (res.token) {
+                        localStorage.setItem('ewu_token', res.token);
+                        localStorage.setItem('ewu_role', res.role);
+                    }
+                    const roleLabel = role === 'student' ? 'Student ID' : 'Faculty ID';
+                    alertBox.className = 'alert alert-success';
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `
+                        <div style="font-size:0.88rem;">
+                            🎉 <strong>Registration Successful!</strong><br>
+                            Your ${roleLabel}: <strong style="font-family:monospace; background:#e0f2fe; padding:2px 8px; border-radius:4px; font-size:1.05rem;">${res.user_id}</strong><br>
+                            <span style="font-size:0.8rem; color:#15803d;">Entering dashboard in 3 seconds...</span>
+                            <div style="margin-top:8px;">
+                                <a href="/${res.role}/dashboard.html" class="btn-portal-primary" style="padding:6px 14px; font-size:0.82rem; text-decoration:none; display:inline-block;">
+                                    Enter Dashboard Now &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    btn.style.display = 'none';
+                    setTimeout(() => {
+                        window.location.href = `/${res.role}/dashboard.html`;
+                    }, 3000);
+                } else {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `
+                        <span>⚠️ ${res.error || 'Registration failed'}</span>
+                        ${(res.error || '').includes('already exists') ? `
+                            <div style="margin-top:8px;">
+                                <button type="button" onclick="switchFastTab('login')" class="btn-portal-outline" style="padding:5px 12px; font-size:0.8rem; color:#0f2b48; border-color:#94a3b8;">
+                                    Switch to Sign In &rarr;
+                                </button>
+                            </div>
+                        ` : ''}
+                    `;
+                    btn.disabled = false;
+                    btn.innerHTML = role === 'student' ? 'Register Student & Get Official ID' : 'Register Faculty & Generate Short Initial';
+                }
+            } catch (err) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.style.display = 'block';
+                alertBox.innerHTML = `
+                    <span>⚠️ ${err.message || 'Error connecting to server.'}</span>
+                    ${(err.message || '').includes('already exists') ? `
+                        <div style="margin-top:8px;">
+                            <button type="button" onclick="switchFastTab('login')" class="btn-portal-outline" style="padding:5px 12px; font-size:0.8rem; color:#0f2b48; border-color:#94a3b8;">
+                                Switch to Sign In &rarr;
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                btn.disabled = false;
+                btn.innerHTML = role === 'student' ? 'Register Student & Get Official ID' : 'Register Faculty & Generate Short Initial';
+            }
+        }
+
+        async function handleFastLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('fast-login-btn');
+            const alertBox = document.getElementById('fast-login-alert');
+            alertBox.style.display = 'none';
+
+            btn.disabled = true;
+            btn.innerHTML = 'Signing In...';
+
+            const selected_role = document.getElementById('fast_login_role').value;
+            const user_id = document.getElementById('fast_login_id').value.trim();
+            const password = document.getElementById('fast_login_pass').value;
+
+            try {
+                const res = await App.post('/login', { selected_role, user_id, password });
+                if (res.success) {
+                    if (res.token) {
+                        localStorage.setItem('ewu_token', res.token);
+                        localStorage.setItem('ewu_role', res.role);
+                    }
+                    window.location.href = `/${res.role}/dashboard.html`;
+                } else {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `<span>⚠️ ${res.error || 'Login failed'}</span>`;
+                    btn.disabled = false;
+                    btn.innerHTML = 'Sign In to Portal';
+                }
+            } catch (err) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.style.display = 'block';
+                alertBox.innerHTML = `<span>⚠️ ${err.message || 'Login failed'}</span>`;
+                btn.disabled = false;
+                btn.innerHTML = 'Sign In to Portal';
+            }
+        }
+    </script>
 </body>
 </html>
